@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 324" fill="none">
+  <defs>
+    <linearGradient id="gold" x1="40" y1="20" x2="200" y2="300">
+      <stop offset="0%" stop-color="#f5e8c8"/>
+      <stop offset="35%" stop-color="#d4b978"/>
+      <stop offset="55%" stop-color="#c9a962"/>
+      <stop offset="100%" stop-color="#8b7340"/>
+    </linearGradient>
+  </defs>
+  <circle cx="120" cy="72" r="34" fill="#0a0a0a" stroke="url(#gold)" stroke-width="1.8"/>
+  <path d="M102 54V90M138 54V90" stroke="url(#gold)" stroke-width="3.2" stroke-linecap="round"/>
+  <path d="M102 72c6-6 30-6 36 0" stroke="url(#gold)" stroke-width="2.8" stroke-linecap="round" fill="none"/>
+  <path d="M52 112h156" stroke="url(#gold)" stroke-width="0.9" opacity="0.85"/>
+  <text x="120" y="168" text-anchor="middle" fill="url(#gold)" font-family="Georgia, serif" font-size="46" font-weight="700">Huma</text>
+  <text x="120" y="196" text-anchor="middle" fill="url(#gold)" font-family="Georgia, serif" font-size="13" font-weight="600" letter-spacing="5.5">BEAUTY SALOON</text>
+  <path d="M52 218h156" stroke="url(#gold)" stroke-width="0.9" opacity="0.85"/>
+  <path d="M120 218l6 10-6 10-6-10z" fill="url(#gold)"/>
+</svg>

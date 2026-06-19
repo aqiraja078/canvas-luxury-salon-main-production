@@ -1,0 +1,24 @@
+export const mainNavLinks = [
+  { href: "/", label: "Home" },
+  { href: "/services", label: "Service" },
+  { href: "/offers", label: "Offers" },
+  { href: "/courses", label: "Course" },
+  { href: "/about", label: "About" },
+  { href: "/book", label: "Book" },
+  { href: "/contact", label: "Contact" },
+] as const;
+
+export const serviceNavLinks = [
+  { href: "/services", label: "All services" },
+  { href: "/services/hair", label: "Hair" },
+  { href: "/services/makeup", label: "Makeup" },
+  { href: "/services/facial", label: "Facial" },
+  { href: "/services/body-spa", label: "Body & spa" },
+  { href: "/services/nails", label: "Mani, pedi & nails" },
+  { href: "/services/mehndi", label: "Mehndi" },
+] as const;
+
+/** Header top nav — Service is a dropdown, so Home is separate. */
+export const headerNavLinks = mainNavLinks.filter((l) => l.href !== "/");
+
+export const servicesSub = serviceNavLinks;

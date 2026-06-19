@@ -1,0 +1,39 @@
+canvas-luxury-salon-main-production-done/
+
+# dependencies
+node_modules/
+**/node_modules/
+
+# next.js
+**/.next/
+**/.next-build/
+**/.next-salon/
+**/out/
+
+# Local CMS / customer data (do not commit)
+canvas-luxury-salon-main-production/data/bookings.json
+canvas-luxury-salon-main-production/data/appointments-log.jsonl
+canvas-luxury-salon-main-production/data/services.json
+canvas-luxury-salon-main-production/data/services-seeded.json
+canvas-luxury-salon-main-production/data/services-descriptions-v*.json
+canvas-luxury-salon-main-production/data/offers.json
+canvas-luxury-salon-main-production/data/team.json
+canvas-luxury-salon-main-production/data/users.json
+canvas-luxury-salon-main-production/data/courses.json
+canvas-luxury-salon-main-production/data/course-applications.json
+canvas-luxury-salon-main-production/data/admin-credentials.txt
+canvas-luxury-salon-main-production/data/uploads/
+
+# env
+.env*
+!.env.example
+!**/.env.example
+
+# misc
+.DS_Store
+*.pem
+.vercel
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
