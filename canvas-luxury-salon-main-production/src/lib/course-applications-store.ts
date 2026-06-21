@@ -15,7 +15,7 @@ export async function getCourseApplications(): Promise<CmsCourseApplication[]> {
 }
 
 export async function addCourseApplication(
-  input: Omit<CmsCourseApplication, "id" | "createdAt"> & {
+  input: Omit<CmsCourseApplication, "id" | "createdAt" | "status"> & {
     status?: CourseApplicationStatus;
   }
 ): Promise<CmsCourseApplication> {

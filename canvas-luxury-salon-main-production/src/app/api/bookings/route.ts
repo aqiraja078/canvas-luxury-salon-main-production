@@ -45,6 +45,7 @@ export async function POST(request: Request) {
       date,
       time,
       message,
+      status: "pending",
     });
     return NextResponse.json({ ok: true, id: booking.id });
   } catch (err) {

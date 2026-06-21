@@ -74,7 +74,7 @@ export async function getBookings(): Promise<Booking[]> {
 }
 
 export async function addBooking(
-  input: Omit<Booking, "id" | "createdAt"> & { status?: BookingStatus }
+  input: Omit<Booking, "id" | "createdAt" | "status"> & { status?: BookingStatus }
 ): Promise<Booking> {
   try {
     const list = await getBookings();
