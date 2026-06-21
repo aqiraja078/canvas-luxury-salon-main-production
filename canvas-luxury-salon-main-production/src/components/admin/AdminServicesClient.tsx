@@ -1,7 +1,11 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { CmsService, ServiceCategorySlug } from "@/lib/cms-types";
+import {
+  applySectionToForm,
+  getServiceSectionsForCategory,
+} from "@/lib/service-category-sections";
 import { WAX_SECTION_IDS } from "@/lib/waxing-services-data";
 import {
   AdminField,
@@ -51,6 +55,51 @@ export function AdminServicesClient({
   const [msg, setMsg] = useState("");
   const formRef = useRef<HTMLDivElement>(null);
 
+  const sectionOptions = useMemo(() => {
+    const base = getServiceSectionsForCategory(form.categorySlug, rows);
+    if (
+      form.sectionId &&
+      !base.some((section) => section.id === form.sectionId)
+    ) {
+      return [
+        ...base,
+        {
+          id: form.sectionId,
+          emoji: form.sectionEmoji || "✨",
+          title: form.sectionTitle || form.sectionId,
+        },
+      ];
+    }
+    return base;
+  }, [
+    form.categorySlug,
+    form.sectionEmoji,
+    form.sectionId,
+    form.sectionTitle,
+    rows,
+  ]);
+
+  function pickDefaultSection(categorySlug: ServiceCategorySlug) {
+    const sections = getServiceSectionsForCategory(categorySlug, rows);
+    return applySectionToForm(sections[0]);
+  }
+
+  function onCategoryChange(categorySlug: ServiceCategorySlug) {
+    setForm((f) => ({
+      ...f,
+      categorySlug,
+      ...pickDefaultSection(categorySlug),
+    }));
+  }
+
+  function onSectionChange(sectionId: string) {
+    const section = sectionOptions.find((s) => s.id === sectionId);
+    setForm((f) => ({
+      ...f,
+      ...applySectionToForm(section),
+    }));
+  }
+
   const filtered =
     filter === "all"
       ? rows
@@ -70,7 +119,11 @@ export function AdminServicesClient({
 
   function openCreate() {
     setEditing(null);
-    setForm(emptyForm);
+    const categorySlug = emptyForm.categorySlug;
+    setForm({
+      ...emptyForm,
+      ...pickDefaultSection(categorySlug),
+    });
     setMsg("");
     setShowForm(true);
     scrollToForm();
@@ -118,11 +171,31 @@ export function AdminServicesClient({
   }
 
   async function save() {
+    if (!form.sectionId.trim() || !form.sectionTitle.trim()) {
+      setMsg("Please select a section for this service.");
+      return;
+    }
+    if (!form.name.trim() || !form.price.trim()) {
+      setMsg("Service name and price are required.");
+      return;
+    }
+
     setBusy(true);
     setMsg("");
     try {
+      const nextSortOrder = editing
+        ? form.sortOrder
+        : rows
+            .filter(
+              (r) =>
+                r.categorySlug === form.categorySlug &&
+                r.sectionId === form.sectionId
+            )
+            .reduce((max, r) => Math.max(max, r.sortOrder), -1) + 1;
+
       const payload = {
         ...form,
+        sortOrder: nextSortOrder,
         duration: form.duration || undefined,
         imageUrl: form.imageUrl || undefined,
       };
@@ -280,10 +353,7 @@ export function AdminServicesClient({
                 className={adminInputClass}
                 value={form.categorySlug}
                 onChange={(e) =>
-                  setForm((f) => ({
-                    ...f,
-                    categorySlug: e.target.value as ServiceCategorySlug,
-                  }))
+                  onCategoryChange(e.target.value as ServiceCategorySlug)
                 }
               >
                 {CATEGORIES.map((c) => (
@@ -294,31 +364,37 @@ export function AdminServicesClient({
               </select>
             </AdminField>
             <AdminField label="Section title">
-              <input
+              <select
                 className={adminInputClass}
-                value={form.sectionTitle}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, sectionTitle: e.target.value }))
-                }
-              />
+                value={form.sectionId}
+                onChange={(e) => onSectionChange(e.target.value)}
+              >
+                <option value="">Select section…</option>
+                {sectionOptions.map((section) => (
+                  <option key={section.id} value={section.id}>
+                    {section.emoji} {section.title}
+                  </option>
+                ))}
+              </select>
+              <p className="mt-1.5 text-[11px] text-white/40">
+                Sections match the groups shown on your website service page.
+              </p>
             </AdminField>
             <div className="grid grid-cols-2 gap-3">
               <AdminField label="Section ID">
                 <input
-                  className={adminInputClass}
+                  className={`${adminInputClass} cursor-not-allowed opacity-70`}
                   value={form.sectionId}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, sectionId: e.target.value }))
-                  }
+                  readOnly
+                  tabIndex={-1}
                 />
               </AdminField>
               <AdminField label="Emoji">
                 <input
-                  className={adminInputClass}
+                  className={`${adminInputClass} cursor-not-allowed opacity-70`}
                   value={form.sectionEmoji}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, sectionEmoji: e.target.value }))
-                  }
+                  readOnly
+                  tabIndex={-1}
                 />
               </AdminField>
             </div>

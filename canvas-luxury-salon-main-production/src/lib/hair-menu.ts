@@ -11,7 +11,6 @@ export function enrichHairMenuSections(
       if (!hair) return item;
       return {
         ...item,
-        price: hair.price,
         lengthPricing: hair.lengthPricing,
       };
     }),
