@@ -5,6 +5,8 @@ import { HomeCategoryServicesRow } from "@/components/home/HomeCategoryServicesR
 import { HomeServiceOffersSection } from "@/components/home/HomeServiceOffersSection";
 import { activeHomeCards, getHomePage } from "@/lib/home-page-store";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const home = await getHomePage();
 

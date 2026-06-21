@@ -5,8 +5,8 @@ import type { CmsOffer } from "@/lib/cms-types";
 const KEY = "offers";
 
 async function ensureSeeded() {
-  const list = await readCmsJson<CmsOffer[]>(KEY, []);
-  if (list.length > 0) return;
+  const list = await readCmsJson<CmsOffer[] | null>(KEY, null);
+  if (list !== null) return;
   const ts = new Date().toISOString();
   const seed: CmsOffer[] = [
     {

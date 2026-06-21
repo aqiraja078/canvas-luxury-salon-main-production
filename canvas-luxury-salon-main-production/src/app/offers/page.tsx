@@ -9,6 +9,8 @@ export const metadata: Metadata = {
   description: `Special offers and packages from ${site.name}.`,
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function OffersPage() {
   const offers = await getActiveOffers();
 
