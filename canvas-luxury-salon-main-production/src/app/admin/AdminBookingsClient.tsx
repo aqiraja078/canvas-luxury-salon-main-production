@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Booking, BookingStatus } from "@/lib/bookings-types";
 import type { AdminSessionUser } from "@/lib/admin-session-user";
 import { AdminShell, adminCardClass, adminInputClass } from "@/components/admin/AdminShell";
@@ -234,10 +234,8 @@ export function AdminBookingsClient({
 }: Props) {
   const [rows, setRows] = useState(initial);
   const [busy, setBusy] = useState<string | null>(null);
-  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [actionMsg, setActionMsg] = useState("");
-  const menuRef = useRef<HTMLDivElement>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [search, setSearch] = useState("");
@@ -251,10 +249,8 @@ export function AdminBookingsClient({
   useEffect(() => {
     if (!openMenuId) return;
 
-    function onDocClick(e: MouseEvent) {
-      if (menuRef.current?.contains(e.target as Node)) return;
+    function onDocClick() {
       setOpenMenuId(null);
-      setDeleteConfirm(null);
     }
 
     const timer = window.setTimeout(() => {
@@ -369,13 +365,17 @@ export function AdminBookingsClient({
         throw new Error(data.error || "Deletion failed");
       }
       setRows((r) => r.filter((b) => b.id !== id));
-      setDeleteConfirm(null);
       setOpenMenuId(null);
     } catch (err) {
       setActionMsg(err instanceof Error ? err.message : "Could not delete booking.");
     } finally {
       setBusy(null);
     }
+  }
+
+  async function removeBooking(id: string) {
+    if (!confirm("Delete this booking permanently?")) return;
+    await deleteBooking(id);
   }
 
   const pct = (n: number) => (stats.all ? Math.round((n / stats.all) * 100) : 0);
@@ -617,8 +617,8 @@ export function AdminBookingsClient({
       ) : null}
 
       {/* Table */}
-      <div className={`mt-6 overflow-hidden ${adminCardClass}`}>
-        <div className="overflow-x-auto">
+      <div className={`mt-6 ${adminCardClass}`}>
+        <div className="overflow-x-auto overflow-y-visible">
           <table className="w-full min-w-[1100px] border-collapse text-left text-xs">
             <thead>
               <tr className="border-b border-gold/15 bg-black/25">
@@ -722,13 +722,12 @@ export function AdminBookingsClient({
                           {b.status}
                         </span>
                       </td>
-                      <td className={`${TD} relative whitespace-nowrap text-right`}>
+                      <td className={`${TD} relative overflow-visible whitespace-nowrap text-right`}>
                         <button
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
                             setOpenMenuId(isMenuOpen ? null : b.id);
-                            setDeleteConfirm(null);
                           }}
                           disabled={busy === b.id}
                           className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-white/45 transition hover:bg-gold/10 hover:text-gold-light disabled:opacity-40"
@@ -738,74 +737,44 @@ export function AdminBookingsClient({
                         </button>
                         {isMenuOpen ? (
                           <div
-                            ref={menuRef}
                             onClick={(e) => e.stopPropagation()}
-                            className="absolute right-4 top-10 z-20 min-w-[10rem] rounded-xl border border-gold/20 bg-black/90 py-1 shadow-luxury backdrop-blur-xl"
+                            className="absolute right-4 top-full z-50 mt-1 min-w-[10rem] rounded-xl border border-gold/20 bg-black/95 py-1 shadow-luxury backdrop-blur-xl"
                           >
-                            {deleteConfirm === b.id ? (
+                            <p className="px-3 py-1.5 text-[10px] uppercase tracking-wider text-white/30">
+                              Update status
+                            </p>
+                            {(["pending", "confirmed", "cancelled"] as const).map(
+                              (s) => (
+                                <button
+                                  key={s}
+                                  type="button"
+                                  disabled={b.status === s || busy === b.id}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    void setStatus(b.id, s);
+                                  }}
+                                  className="block w-full px-3 py-2 text-left text-xs capitalize text-white/75 hover:bg-gold/[0.06] hover:text-gold-light disabled:opacity-40"
+                                >
+                                  {s}
+                                </button>
+                              )
+                            )}
+                            {canDelete ? (
                               <>
-                                <p className="px-3 py-2 text-[11px] text-rose-300">
-                                  Delete this booking?
-                                </p>
+                                <div className="my-1 border-t border-white/[0.06]" />
                                 <button
                                   type="button"
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    void deleteBooking(b.id);
+                                    setOpenMenuId(null);
+                                    void removeBooking(b.id);
                                   }}
                                   className="block w-full px-3 py-2 text-left text-xs text-rose-400 hover:bg-white/[0.04]"
                                 >
-                                  Confirm delete
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setDeleteConfirm(null);
-                                  }}
-                                  className="block w-full px-3 py-2 text-left text-xs text-white/60 hover:bg-white/[0.04]"
-                                >
-                                  Cancel
+                                  Delete booking
                                 </button>
                               </>
-                            ) : (
-                              <>
-                                <p className="px-3 py-1.5 text-[10px] uppercase tracking-wider text-white/30">
-                                  Update status
-                                </p>
-                                {(["pending", "confirmed", "cancelled"] as const).map(
-                                  (s) => (
-                                    <button
-                                      key={s}
-                                      type="button"
-                                      disabled={b.status === s || busy === b.id}
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        void setStatus(b.id, s);
-                                      }}
-                                      className="block w-full px-3 py-2 text-left text-xs capitalize text-white/75 hover:bg-gold/[0.06] hover:text-gold-light disabled:opacity-40"
-                                    >
-                                      {s}
-                                    </button>
-                                  )
-                                )}
-                                {canDelete ? (
-                                  <>
-                                    <div className="my-1 border-t border-white/[0.06]" />
-                                    <button
-                                      type="button"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setDeleteConfirm(b.id);
-                                      }}
-                                      className="block w-full px-3 py-2 text-left text-xs text-rose-400 hover:bg-white/[0.04]"
-                                    >
-                                      Delete booking
-                                    </button>
-                                  </>
-                                ) : null}
-                              </>
-                            )}
+                            ) : null}
                           </div>
                         ) : null}
                       </td>
