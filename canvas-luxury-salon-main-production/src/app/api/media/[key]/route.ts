@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { readUploadedImage } from "@/lib/media-store";
 
+export const dynamic = "force-dynamic";
+
 type Params = { params: Promise<{ key: string }> };
 
 export async function GET(_request: Request, { params }: Params) {

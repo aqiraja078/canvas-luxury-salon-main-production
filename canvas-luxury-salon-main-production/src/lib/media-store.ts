@@ -20,6 +20,36 @@ async function ensureUploadsDir() {
   await fs.mkdir(UPLOADS_DIR, { recursive: true });
 }
 
+async function writeLocalUpload(key: string, buffer: Buffer): Promise<void> {
+  try {
+    await ensureUploadsDir();
+    await fs.writeFile(path.join(UPLOADS_DIR, key), buffer);
+  } catch (err) {
+    console.warn(`[media-store] local upload write skipped for ${key}:`, err);
+  }
+}
+
+async function readPublicBundledImage(
+  key: string
+): Promise<{ buffer: Buffer; contentType: string } | null> {
+  try {
+    const bundledPath = path.join(process.cwd(), "public", "cms-media", key);
+    const buffer = await fs.readFile(bundledPath);
+    const ext = key.split(".").pop()?.toLowerCase();
+    const contentType =
+      ext === "png"
+        ? "image/png"
+        : ext === "webp"
+          ? "image/webp"
+          : ext === "gif"
+            ? "image/gif"
+            : "image/jpeg";
+    return { buffer, contentType };
+  } catch {
+    return null;
+  }
+}
+
 async function getMediaBlobStore() {
   try {
     return await getStore(MEDIA_STORE_NAME);
@@ -60,10 +90,11 @@ export async function saveUploadedImage(
     await store.set(key, arrayBuffer, {
       metadata: { contentType: file.type },
     });
+  } else if (process.env.NETLIFY) {
+    throw new Error("Media storage is unavailable on this server.");
   }
 
-  await ensureUploadsDir();
-  await fs.writeFile(path.join(UPLOADS_DIR, key), buffer);
+  await writeLocalUpload(key, buffer);
 
   return { key, url: `/api/media/${key}` };
 }
@@ -103,6 +134,6 @@ export async function readUploadedImage(
             : "image/jpeg";
     return { buffer, contentType };
   } catch {
-    return null;
+    return readPublicBundledImage(key);
   }
 }
