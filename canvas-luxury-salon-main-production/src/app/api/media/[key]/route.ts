@@ -14,7 +14,7 @@ export async function GET(_request: Request, { params }: Params) {
   return new NextResponse(new Uint8Array(image.buffer), {
     headers: {
       "Content-Type": image.contentType,
-      "Cache-Control": "public, max-age=31536000, immutable",
+      "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400",
     },
   });
 }

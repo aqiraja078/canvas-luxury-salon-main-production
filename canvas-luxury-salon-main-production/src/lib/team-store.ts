@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { unstable_noStore as noStore } from "next/cache";
 import { readCmsJson, writeCmsJson } from "@/lib/cms-store";
 import type { CmsTeamMember } from "@/lib/cms-types";
 
@@ -27,6 +28,7 @@ async function ensureSeeded() {
 }
 
 export async function getTeamMembers(): Promise<CmsTeamMember[]> {
+  noStore();
   await ensureSeeded();
   return (await readCmsJson<CmsTeamMember[]>(KEY, [])).sort(
     (a, b) => a.sortOrder - b.sortOrder

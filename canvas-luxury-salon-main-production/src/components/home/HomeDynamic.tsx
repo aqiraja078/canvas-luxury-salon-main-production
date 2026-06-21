@@ -10,6 +10,7 @@ import { getActiveOffers } from "@/lib/offers-store";
 import { getActiveServices } from "@/lib/services-store";
 import type { CmsHomeSectionMeta } from "@/lib/cms-types";
 import { getActiveTeamMembers } from "@/lib/team-store";
+import { TeamArtistsSection } from "@/components/team/TeamArtistsSection";
 import { serviceCategories } from "@/lib/site";
 
 export async function HomeServicesDynamic() {
@@ -128,42 +129,12 @@ export async function HomeTeamDynamic({ meta }: { meta: CmsHomeSectionMeta }) {
   const team = await getActiveTeamMembers();
 
   return (
-    <HomeSection tone="obsidian" className="home-team-section">
-      <HomeSectionHeader
-        kicker={meta.kicker}
-        title={meta.title}
-        subtitle={meta.subtitle}
-        index={meta.sectionIndex}
-      />
-      {team.length > 0 ? (
-        <div className="home-team-section__grid">
-          {team.map((m) => (
-            <div key={m.id} className="home-team-section__item">
-              <article className="home-team-card">
-                <div className="home-team-card__media">
-                  {m.imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={m.imageUrl} alt={m.name} className="h-full w-full object-cover" />
-                  ) : (
-                    <div className="flex h-full items-center justify-center text-4xl text-gold/50">
-                      {m.name.charAt(0)}
-                    </div>
-                  )}
-                </div>
-                <div className="p-5">
-                  <h3 className="font-display text-xl text-white">{m.name}</h3>
-                  <p className="text-sm text-gold">{m.role}</p>
-                  <p className="mt-2 line-clamp-2 text-sm text-white/60">{m.bio}</p>
-                </div>
-              </article>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p className="home-team-section__empty">
-          Team profiles will appear here once active members are added in admin.
-        </p>
-      )}
-    </HomeSection>
+    <TeamArtistsSection
+      kicker={meta.kicker}
+      title={meta.title}
+      subtitle={meta.subtitle}
+      index={meta.sectionIndex}
+      members={team}
+    />
   );
 }

@@ -96,7 +96,7 @@ export function AdminTeamClient({
         setRows((prev) => [...prev, data]);
       }
       openCreate();
-      setMsg("Saved.");
+      setMsg("Saved. Refresh the home and about pages to see the updated photo.");
     } catch (e) {
       setMsg(e instanceof Error ? e.message : "Save failed");
     } finally {
@@ -118,7 +118,7 @@ export function AdminTeamClient({
     <AdminShell
       sessionUser={sessionUser}
       title="Team"
-      subtitle="Manage team members shown on the homepage — photo, bio, and specialties."
+      subtitle="Manage team members shown on the home and about pages — photo, bio, and specialties."
     >
       <button type="button" onClick={openCreate} className="rounded-full bg-gold px-5 py-2 text-xs font-semibold uppercase tracking-wider text-black">
         + Add member
@@ -156,7 +156,28 @@ export function AdminTeamClient({
             <AdminField label="Specialties (comma separated)"><input className={adminInputClass} value={form.specialties} onChange={(e) => setForm((f) => ({ ...f, specialties: e.target.value }))} /></AdminField>
             <AdminField label="Experience (years)"><input className={adminInputClass} value={form.experienceYears} onChange={(e) => setForm((f) => ({ ...f, experienceYears: e.target.value }))} /></AdminField>
             <AdminField label="Instagram URL"><input className={adminInputClass} value={form.instagram} onChange={(e) => setForm((f) => ({ ...f, instagram: e.target.value }))} /></AdminField>
-            <AdminField label="Photo"><input type="file" accept="image/*" onChange={(e) => onImage(e.target.files?.[0] ?? null)} className="text-sm text-white/70" /></AdminField>
+            <AdminField label="Photo URL">
+              <input
+                className={adminInputClass}
+                value={form.imageUrl}
+                placeholder="/api/media/... or https://..."
+                onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))}
+              />
+            </AdminField>
+            <AdminField label="Upload photo">
+              <input type="file" accept="image/*" disabled={busy} onChange={(e) => onImage(e.target.files?.[0] ?? null)} className="text-sm text-white/70" />
+            </AdminField>
+            {form.imageUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={form.imageUrl}
+                alt="Preview"
+                className="mx-auto h-36 w-36 rounded-full border border-gold/30 object-cover"
+              />
+            ) : null}
+            <p className="text-xs text-white/45">
+              Upload a photo, then click <strong className="text-white/70">Save member</strong> to apply it on the site.
+            </p>
             <label className="flex items-center gap-2 text-sm text-white/70"><input type="checkbox" checked={form.active} onChange={(e) => setForm((f) => ({ ...f, active: e.target.checked }))} />Active</label>
             {msg ? <p className="text-sm text-gold">{msg}</p> : null}
             <button type="button" disabled={busy} onClick={save} className="w-full rounded-full bg-white py-3 text-xs font-semibold uppercase tracking-wider text-black">Save member</button>

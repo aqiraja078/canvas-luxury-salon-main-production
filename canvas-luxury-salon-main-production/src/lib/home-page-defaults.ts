@@ -184,10 +184,10 @@ export function buildDefaultHomePage(): CmsHomePage {
       ],
     },
     team: {
-      kicker: "Our team",
-      title: "Artists behind your glow",
+      kicker: "Meet the team",
+      title: "The Artists Behind Your Glow",
       subtitle:
-        "Certified makeup artists, mehndi specialists, and hair stylists — all home-ready.",
+        "Certified specialists for bridal makeup, mehndi, hair, and skin.",
       sectionIndex: "10",
     },
     steps: {

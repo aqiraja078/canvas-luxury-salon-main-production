@@ -9,6 +9,7 @@ export async function POST(request: Request) {
     const canUpload =
       hasPermission(session.role, "services.manage") ||
       hasPermission(session.role, "home.manage") ||
+      hasPermission(session.role, "about.manage") ||
       hasPermission(session.role, "offers.manage") ||
       hasPermission(session.role, "team.manage") ||
       hasPermission(session.role, "courses.manage");

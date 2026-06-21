@@ -227,6 +227,88 @@ export type CmsHomePage = {
   updatedAt: string;
 };
 
+export type CmsAboutTimelineItem = {
+  id: string;
+  year: string;
+  title: string;
+  text: string;
+};
+
+export type CmsAboutPillar = {
+  id: string;
+  num: string;
+  title: string;
+  text: string;
+};
+
+export type CmsAboutStat = {
+  id: string;
+  value: string;
+  label: string;
+};
+
+export type CmsAboutCity = {
+  id: string;
+  name: string;
+  note: string;
+};
+
+export type CmsAboutCtaButton = {
+  id: string;
+  label: string;
+  href: string;
+  variant: "primary" | "secondary" | "outline";
+};
+
+export type CmsAboutHero = {
+  imageUrl: string;
+  kicker: string;
+  titleBefore: string;
+  titleAccent: string;
+  lead: string;
+  cities: { id: string; name: string }[];
+};
+
+export type CmsAboutStory = {
+  imageUrl: string;
+  quoteLine1: string;
+  quoteLine2: string;
+  kicker: string;
+  titleBefore: string;
+  titleAccent: string;
+  subtitle: string;
+  sectionIndex: string;
+  paragraph1: string;
+  paragraph2: string;
+  timeline: CmsAboutTimelineItem[];
+};
+
+export type CmsAboutKitItem = {
+  id: string;
+  text: string;
+};
+
+export type CmsAboutPage = {
+  hero: CmsAboutHero;
+  story: CmsAboutStory;
+  team: CmsHomeSectionMeta & { memberLimit: number };
+  pillars: CmsHomeSectionMeta & { items: CmsAboutPillar[] };
+  stats: CmsAboutStat[];
+  coverage: CmsHomeSectionMeta & { cities: CmsAboutCity[] };
+  homeKit: CmsHomeSectionMeta & {
+    items: CmsAboutKitItem[];
+    quote: string;
+    quoteAttribution: string;
+  };
+  cta: {
+    kicker: string;
+    title: string;
+    subtitle: string;
+    buttons: CmsAboutCtaButton[];
+  };
+  updatedAt: string;
+};
+
 export const ADMIN_PERMISSIONS = {
   "bookings.view": ["owner", "reception", "contact"] as AdminRole[],
   "bookings.update": ["owner", "reception"] as AdminRole[],
@@ -243,6 +325,8 @@ export const ADMIN_PERMISSIONS = {
   "course-applications.update": ["owner", "reception"] as AdminRole[],
   "home.view": ["owner", "reception"] as AdminRole[],
   "home.manage": ["owner"] as AdminRole[],
+  "about.view": ["owner", "reception"] as AdminRole[],
+  "about.manage": ["owner"] as AdminRole[],
   "users.manage": ["owner"] as AdminRole[],
 } as const;
 

@@ -71,6 +71,10 @@ const PERMISSION_CHIP_LABELS: Partial<Record<AdminPermission, string>> = {
   "courses.manage": "Manage courses",
   "course-applications.view": "Applications",
   "course-applications.update": "Update applications",
+  "home.view": "Home page",
+  "home.manage": "Manage home page",
+  "about.view": "About page",
+  "about.manage": "Manage about page",
   "users.manage": "Admin users",
 };
 
