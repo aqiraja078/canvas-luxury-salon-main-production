@@ -5,9 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState, type FocusEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HumaLogo } from "@/components/brand/HumaLogo";
-import { headerNavLinks, servicesSub } from "@/lib/navigation";
-
-const navLinks = headerNavLinks.filter((l) => l.href !== "/services");
+import type { SiteNavLink } from "@/lib/navigation";
 
 function servicesActive(pathname: string) {
   return pathname === "/services" || pathname.startsWith("/services/");
@@ -20,7 +18,14 @@ function closeServicesOnBlur(e: FocusEvent<HTMLDivElement>) {
   return false;
 }
 
-export function SiteHeader() {
+export function SiteHeader({
+  headerNavLinks,
+  serviceNavLinks,
+}: {
+  headerNavLinks: SiteNavLink[];
+  serviceNavLinks: SiteNavLink[];
+}) {
+  const navLinks = headerNavLinks.filter((l) => l.href !== "/services");
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -47,8 +52,8 @@ export function SiteHeader() {
     <header
       className={`fixed left-0 right-0 top-0 z-40 transition-all duration-500 ${
         scrolled
-          ? "border-b border-white/10 bg-black/70 py-3 backdrop-blur-xl"
-          : "bg-gradient-to-b from-black/80 to-transparent py-5"
+          ? "border-b border-white/10 bg-black/70 py-3 backdrop-blur-xl sm:py-3.5"
+          : "bg-gradient-to-b from-black/80 to-transparent py-3.5 sm:py-5"
       }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 pt-[env(safe-area-inset-top)] sm:px-6 md:px-8">
@@ -116,7 +121,7 @@ export function SiteHeader() {
                   className="absolute left-0 top-full z-50 min-w-[200px] pt-2"
                 >
                   <div id="services-dropdown" role="menu" className="rounded-xl border border-white/10 bg-black/95 py-2 shadow-xl backdrop-blur-xl">
-                    {servicesSub.map((s) => (
+                    {serviceNavLinks.map((s) => (
                       <Link
                         key={s.href}
                         href={s.href}
@@ -249,7 +254,7 @@ export function SiteHeader() {
                       className="overflow-hidden"
                     >
                       <div className="mb-2 ml-2 flex flex-col border-l border-gold/30 pl-3">
-                        {servicesSub.map((s) => (
+                        {serviceNavLinks.map((s) => (
                           <Link
                             key={s.href}
                             href={s.href}

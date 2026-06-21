@@ -1,11 +1,17 @@
 import Link from "next/link";
-import { mainNavLinks, serviceNavLinks } from "@/lib/navigation";
+import type { SiteNavLink } from "@/lib/navigation";
 import { site } from "@/lib/site";
 
 const footerLinkClass =
   "inline-block py-1 transition hover:text-white sm:py-1.5";
 
-export function SiteFooter() {
+export function SiteFooter({
+  mainNavLinks,
+  serviceNavLinks,
+}: {
+  mainNavLinks: SiteNavLink[];
+  serviceNavLinks: SiteNavLink[];
+}) {
   const year = new Date().getFullYear();
 
   return (
@@ -110,7 +116,7 @@ export function SiteFooter() {
       </div>
 
       <div className="border-t border-white/5 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] text-center text-[11px] text-white/40 sm:py-4 sm:text-xs">
-        © {year} {site.name}. All rights reserved.
+        © <span suppressHydrationWarning>{year}</span> {site.name}. All rights reserved.
       </div>
     </footer>
   );

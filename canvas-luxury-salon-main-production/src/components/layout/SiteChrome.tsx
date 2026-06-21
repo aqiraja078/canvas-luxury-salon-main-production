@@ -2,15 +2,25 @@
 
 import { usePathname } from "next/navigation";
 import { PageLoader } from "@/components/layout/PageLoader";
-import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
+import type { SiteNavLink } from "@/lib/navigation";
 
 function isAdminPath(pathname: string | null): boolean {
   return pathname?.startsWith("/admin") ?? false;
 }
 
-export function SiteChrome({ children }: { children: React.ReactNode }) {
+export function SiteChrome({
+  children,
+  footer,
+  headerNavLinks,
+  serviceNavLinks,
+}: {
+  children: React.ReactNode;
+  footer: React.ReactNode;
+  headerNavLinks: SiteNavLink[];
+  serviceNavLinks: SiteNavLink[];
+}) {
   const pathname = usePathname();
   const isAdmin = isAdminPath(pathname);
 
@@ -31,11 +41,14 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
         Skip to main content
       </a>
       <PageLoader />
-      <SiteHeader />
+      <SiteHeader
+        headerNavLinks={headerNavLinks}
+        serviceNavLinks={serviceNavLinks}
+      />
       <main id="main-content" className="min-h-screen" tabIndex={-1}>
         {children}
       </main>
-      <SiteFooter />
+      {footer}
       <WhatsAppButton />
     </>
   );

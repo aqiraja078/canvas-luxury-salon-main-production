@@ -11,7 +11,7 @@ export function HomeHero({ hero }: { hero: CmsHomeHero }) {
           <img
             src={hero.imageUrl}
             alt="Luxury home beauty service atmosphere"
-            className="home-hero__image absolute inset-0 h-full w-full object-cover object-[center_38%] sm:object-[center_32%] md:object-[center_28%]"
+            className="home-hero__image absolute inset-0 h-full w-full object-cover object-[center_22%] sm:object-[center_32%] md:object-[center_28%]"
           />
         ) : (
           <Image
@@ -19,7 +19,7 @@ export function HomeHero({ hero }: { hero: CmsHomeHero }) {
             alt="Luxury home beauty service atmosphere"
             fill
             priority
-            className="home-hero__image object-cover object-[center_38%] sm:object-[center_32%] md:object-[center_28%]"
+            className="home-hero__image object-cover object-[center_22%] sm:object-[center_32%] md:object-[center_28%]"
             sizes="100vw"
           />
         )}

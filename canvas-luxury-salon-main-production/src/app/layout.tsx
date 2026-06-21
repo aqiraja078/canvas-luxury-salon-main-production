@@ -2,8 +2,10 @@ import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Poppins } from "next/font/google";
 import "./globals.css";
 import { SiteChrome } from "@/components/layout/SiteChrome";
+import { SiteFooter } from "@/components/layout/SiteFooter";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getMetadataBase } from "@/lib/public-site-url";
+import { headerNavLinks, mainNavLinks, serviceNavLinks, type SiteNavLink } from "@/lib/navigation";
 import { site } from "@/lib/site";
 
 const poppins = Poppins({
@@ -63,6 +65,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const navMain: SiteNavLink[] = mainNavLinks.map((link) => ({
+    href: link.href,
+    label: link.label,
+  }));
+  const navServices: SiteNavLink[] = serviceNavLinks.map((link) => ({
+    href: link.href,
+    label: link.label,
+  }));
+
   return (
     <html lang="en" className="scroll-smooth" data-scroll-behavior="smooth">
       <head>
@@ -75,7 +86,21 @@ export default function RootLayout({
         className={`${poppins.variable} ${playfair.variable} grain min-h-screen overflow-x-clip bg-background antialiased selection:bg-gold/30 selection:text-white`}
       >
         <JsonLd />
-        <SiteChrome>{children}</SiteChrome>
+        <SiteChrome
+          footer={
+            <SiteFooter
+              mainNavLinks={navMain}
+              serviceNavLinks={navServices}
+            />
+          }
+          headerNavLinks={headerNavLinks.map((link) => ({
+            href: link.href,
+            label: link.label,
+          }))}
+          serviceNavLinks={navServices}
+        >
+          {children}
+        </SiteChrome>
       </body>
     </html>
   );

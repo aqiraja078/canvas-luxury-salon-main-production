@@ -18,6 +18,8 @@ export const serviceNavLinks = [
   { href: "/services/mehndi", label: "Mehndi" },
 ] as const;
 
+export type SiteNavLink = { href: string; label: string };
+
 /** Header top nav — Service is a dropdown, so Home is separate. */
 export const headerNavLinks = mainNavLinks.filter((l) => l.href !== "/");
 
