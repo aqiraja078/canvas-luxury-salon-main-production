@@ -43,6 +43,7 @@ export default async function AdminBookingsPage() {
       monthTo={month.to}
       todayDate={localDateKey()}
       canCreate={hasPermission(session.role, "bookings.update")}
+      canDelete={hasPermission(session.role, "bookings.delete")}
     />
   );
 }

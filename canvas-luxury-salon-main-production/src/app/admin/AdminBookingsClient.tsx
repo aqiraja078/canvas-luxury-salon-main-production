@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Booking, BookingStatus } from "@/lib/bookings-types";
 import type { AdminSessionUser } from "@/lib/admin-session-user";
 import { AdminShell, adminCardClass, adminInputClass } from "@/components/admin/AdminShell";
@@ -17,6 +17,7 @@ type Props = {
   monthTo: string;
   todayDate: string;
   canCreate: boolean;
+  canDelete: boolean;
 };
 
 const PAGE_SIZE = 8;
@@ -229,11 +230,14 @@ export function AdminBookingsClient({
   monthTo,
   todayDate,
   canCreate,
+  canDelete,
 }: Props) {
   const [rows, setRows] = useState(initial);
   const [busy, setBusy] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [actionMsg, setActionMsg] = useState("");
+  const menuRef = useRef<HTMLDivElement>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [search, setSearch] = useState("");
@@ -245,14 +249,22 @@ export function AdminBookingsClient({
   const [priceFilter, setPriceFilter] = useState<string>("all");
 
   useEffect(() => {
-    function onDocClick() {
+    if (!openMenuId) return;
+
+    function onDocClick(e: MouseEvent) {
+      if (menuRef.current?.contains(e.target as Node)) return;
       setOpenMenuId(null);
       setDeleteConfirm(null);
     }
-    if (openMenuId) {
+
+    const timer = window.setTimeout(() => {
       document.addEventListener("click", onDocClick);
-      return () => document.removeEventListener("click", onDocClick);
-    }
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+      document.removeEventListener("click", onDocClick);
+    };
   }, [openMenuId]);
 
   const stats = useMemo(
@@ -345,16 +357,22 @@ export function AdminBookingsClient({
 
   async function deleteBooking(id: string) {
     setBusy(id);
+    setActionMsg("");
     try {
       const res = await fetch("/api/admin/bookings", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id }),
       });
-      if (!res.ok) throw new Error("Deletion failed");
+      const data = (await res.json()) as { error?: string };
+      if (!res.ok) {
+        throw new Error(data.error || "Deletion failed");
+      }
       setRows((r) => r.filter((b) => b.id !== id));
       setDeleteConfirm(null);
       setOpenMenuId(null);
+    } catch (err) {
+      setActionMsg(err instanceof Error ? err.message : "Could not delete booking.");
     } finally {
       setBusy(null);
     }
@@ -409,6 +427,11 @@ export function AdminBookingsClient({
       subtitle={subtitle}
       actions={headerActions}
     >
+      {actionMsg ? (
+        <p className="mb-4 rounded-xl border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+          {actionMsg}
+        </p>
+      ) : null}
       {/* Summary cards */}
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {[
@@ -715,6 +738,7 @@ export function AdminBookingsClient({
                         </button>
                         {isMenuOpen ? (
                           <div
+                            ref={menuRef}
                             onClick={(e) => e.stopPropagation()}
                             className="absolute right-4 top-10 z-20 min-w-[10rem] rounded-xl border border-gold/20 bg-black/90 py-1 shadow-luxury backdrop-blur-xl"
                           >
@@ -725,14 +749,20 @@ export function AdminBookingsClient({
                                 </p>
                                 <button
                                   type="button"
-                                  onClick={() => deleteBooking(b.id)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    void deleteBooking(b.id);
+                                  }}
                                   className="block w-full px-3 py-2 text-left text-xs text-rose-400 hover:bg-white/[0.04]"
                                 >
                                   Confirm delete
                                 </button>
                                 <button
                                   type="button"
-                                  onClick={() => setDeleteConfirm(null)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setDeleteConfirm(null);
+                                  }}
                                   className="block w-full px-3 py-2 text-left text-xs text-white/60 hover:bg-white/[0.04]"
                                 >
                                   Cancel
@@ -749,21 +779,31 @@ export function AdminBookingsClient({
                                       key={s}
                                       type="button"
                                       disabled={b.status === s || busy === b.id}
-                                      onClick={() => setStatus(b.id, s)}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        void setStatus(b.id, s);
+                                      }}
                                       className="block w-full px-3 py-2 text-left text-xs capitalize text-white/75 hover:bg-gold/[0.06] hover:text-gold-light disabled:opacity-40"
                                     >
                                       {s}
                                     </button>
                                   )
                                 )}
-                                <div className="my-1 border-t border-white/[0.06]" />
-                                <button
-                                  type="button"
-                                  onClick={() => setDeleteConfirm(b.id)}
-                                  className="block w-full px-3 py-2 text-left text-xs text-rose-400 hover:bg-white/[0.04]"
-                                >
-                                  Delete booking
-                                </button>
+                                {canDelete ? (
+                                  <>
+                                    <div className="my-1 border-t border-white/[0.06]" />
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setDeleteConfirm(b.id);
+                                      }}
+                                      className="block w-full px-3 py-2 text-left text-xs text-rose-400 hover:bg-white/[0.04]"
+                                    >
+                                      Delete booking
+                                    </button>
+                                  </>
+                                ) : null}
                               </>
                             )}
                           </div>
