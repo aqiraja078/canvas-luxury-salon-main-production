@@ -9,6 +9,7 @@ import {
   getAdminRoleTheme,
   getRolePermissionChips,
 } from "@/lib/admin-role-ui";
+import type { AdminSessionUser } from "@/lib/admin-session-user";
 import { AdminField, AdminShell, adminCardClass, adminInputClass } from "@/components/admin/AdminShell";
 
 type SafeUser = Omit<CmsAdminUser, "passwordHash">;
@@ -130,7 +131,13 @@ function UserAccountCard({
   );
 }
 
-export function AdminUsersClient({ initial }: { initial: SafeUser[] }) {
+export function AdminUsersClient({
+  initial,
+  sessionUser,
+}: {
+  initial: SafeUser[];
+  sessionUser: AdminSessionUser | null;
+}) {
   const [rows, setRows] = useState(initial);
   const [editing, setEditing] = useState<SafeUser | null>(null);
   const [form, setForm] = useState(emptyForm);
@@ -212,6 +219,7 @@ export function AdminUsersClient({ initial }: { initial: SafeUser[] }) {
 
   return (
     <AdminShell
+      sessionUser={sessionUser}
       title="Team access"
       subtitle="Each role has its own look and permissions — owner, reception, and contact."
     >

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Reveal } from "@/components/ui/Reveal";
 import { BookingForm } from "@/components/booking/BookingForm";
-import { getBookingServiceNames } from "@/lib/services-store";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -9,16 +9,7 @@ export const metadata: Metadata = {
   description: `Schedule a visit at ${site.name}.`,
 };
 
-export default async function BookPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ service?: string }>;
-}) {
-  const sp = await searchParams;
-  const decoded =
-    typeof sp.service === "string" ? decodeURIComponent(sp.service) : undefined;
-  const serviceOptions = await getBookingServiceNames();
-
+export default function BookPage() {
   return (
     <div className="pt-24 sm:pt-28">
       <section className="px-4 py-12 sm:px-6 md:px-8 md:py-20">
@@ -48,7 +39,15 @@ export default async function BookPage({
             </div>
           </Reveal>
           <div id="booking-form" className="mt-10 sm:mt-14">
-            <BookingForm defaultService={decoded} serviceOptions={serviceOptions} />
+            <Suspense
+              fallback={
+                <div className="mx-auto max-w-xl rounded-2xl border border-white/10 bg-white/[0.03] p-8 text-center text-sm text-white/50">
+                  Loading booking form…
+                </div>
+              }
+            >
+              <BookingForm />
+            </Suspense>
           </div>
         </div>
       </section>

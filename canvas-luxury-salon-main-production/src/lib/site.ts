@@ -1,4 +1,4 @@
-import { allBodySpaServiceNames } from "@/lib/body-spa-services-data";
+import { allWaxingServiceNames } from "@/lib/waxing-services-data";
 import { allFacialServiceNames } from "@/lib/facial-services-data";
 import { allHairServiceNames } from "@/lib/hair-services-data";
 import { allMakeupServiceNames } from "@/lib/makeup-services-data";
@@ -43,16 +43,16 @@ export const serviceCategories = [
   },
   {
     slug: "body-spa",
-    title: "Body & spa",
-    short: "Relaxing massage, hammam rituals, waxing & body renewal.",
+    title: "Wax",
+    short: "Full & partial body wax, area waxing, and pre/post wax care at home.",
     href: "/services/body-spa",
     image:
       "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=900&q=85",
-    price: "Starting at PKR 4,000",
+    price: "Starting at PKR 150",
   },
   {
     slug: "nails",
-    title: "Mani, pedi & nails",
+    title: "Nail, mani & pedi",
     short: "Flawless mani-pedi, gel polish, nail art & extensions.",
     href: "/services/nails",
     image:
@@ -95,7 +95,7 @@ export const bookingServices: string[] = Array.from(
   new Set<string>([
     ...allHairServiceNames(),
     ...allFacialServiceNames(),
-    ...allBodySpaServiceNames(),
+    ...allWaxingServiceNames(),
     ...allNailsServiceNames(),
     ...allMehndiServiceNames(),
     ...allMakeupServiceNames(),

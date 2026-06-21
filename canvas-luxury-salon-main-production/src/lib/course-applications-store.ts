@@ -15,13 +15,15 @@ export async function getCourseApplications(): Promise<CmsCourseApplication[]> {
 }
 
 export async function addCourseApplication(
-  input: Omit<CmsCourseApplication, "id" | "status" | "createdAt">
+  input: Omit<CmsCourseApplication, "id" | "createdAt"> & {
+    status?: CourseApplicationStatus;
+  }
 ): Promise<CmsCourseApplication> {
   const list = await readCmsJson<CmsCourseApplication[]>(KEY, []);
   const application: CmsCourseApplication = {
     ...input,
     id: randomUUID(),
-    status: "pending",
+    status: input.status ?? "pending",
     createdAt: new Date().toISOString(),
   };
   list.unshift(application);

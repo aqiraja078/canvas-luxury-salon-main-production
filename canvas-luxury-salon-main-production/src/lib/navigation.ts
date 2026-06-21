@@ -13,8 +13,8 @@ export const serviceNavLinks = [
   { href: "/services/hair", label: "Hair" },
   { href: "/services/makeup", label: "Makeup" },
   { href: "/services/facial", label: "Facial" },
-  { href: "/services/body-spa", label: "Body & spa" },
-  { href: "/services/nails", label: "Mani, pedi & nails" },
+  { href: "/services/body-spa", label: "Wax" },
+  { href: "/services/nails", label: "Nail, mani & pedi" },
   { href: "/services/mehndi", label: "Mehndi" },
 ] as const;
 

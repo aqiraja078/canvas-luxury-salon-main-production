@@ -1,21 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import type { AdminRole } from "@/lib/cms-types";
+import { usePathname } from "next/navigation";
 import { hasPermission } from "@/lib/cms-types";
 import { AdminUserCard } from "@/components/admin/AdminUserCard";
+import { useAdminSession } from "@/components/admin/AdminSessionProvider";
 import { HumaLogoMark } from "@/components/brand/HumaLogoMark";
 import { ADMIN_NAV, isAdminNavActive } from "@/lib/admin-nav";
+import type { AdminSessionUser } from "@/lib/admin-session-user";
 import { site } from "@/lib/site";
-
-type AdminUser = {
-  userId: string;
-  username: string;
-  role: AdminRole;
-  name: string;
-};
 
 const NAV = ADMIN_NAV;
 
@@ -23,27 +16,20 @@ export function AdminShell({
   children,
   title,
   subtitle,
+  sessionUser,
+  actions,
 }: {
   children: React.ReactNode;
   title: string;
   subtitle?: string;
+  /** Pass from server page so SSR and client HTML match (avoids hydration errors). */
+  sessionUser?: AdminSessionUser | null;
+  /** Optional header actions (e.g. date picker, primary CTA). */
+  actions?: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const router = useRouter();
-  const [user, setUser] = useState<AdminUser | null>(null);
-
-  useEffect(() => {
-    fetch("/api/admin/me")
-      .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then(setUser)
-      .catch(() => router.replace("/admin/login"));
-  }, [router]);
-
-  async function logout() {
-    await fetch("/api/admin/logout", { method: "POST" });
-    router.push("/admin/login");
-    router.refresh();
-  }
+  const { user: contextUser, logout } = useAdminSession();
+  const user = sessionUser ?? contextUser;
 
   const visibleNav = NAV.filter(
     (item) => !item.permission || (user && hasPermission(user.role, item.permission))
@@ -58,10 +44,10 @@ export function AdminShell({
         aria-hidden
       />
 
-      <div className="relative mx-auto flex max-w-[90rem] flex-col gap-0 lg:flex-row">
+      <div className="relative flex w-full flex-col gap-0 lg:flex-row">
         {/* Sidebar */}
-        <aside className="lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-white/[0.06] lg:bg-black/40 lg:backdrop-blur-xl">
-          <div className="border-b border-white/[0.06] px-5 pb-5 pt-5 lg:pt-8">
+        <aside className="border-b border-white/[0.06] lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:flex lg:w-64 lg:flex-col lg:border-b-0 lg:border-r lg:bg-black/40 lg:backdrop-blur-xl">
+          <div className="border-b border-white/[0.06] px-4 pb-4 pt-4 sm:px-5 sm:pb-5 sm:pt-5 lg:pt-8">
             <Link href="/admin" className="group flex items-center gap-3">
               <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-gold/35 bg-black/50 shadow-[0_0_30px_-8px_rgba(201,169,98,0.5)]">
                 <HumaLogoMark size={34} />
@@ -76,17 +62,13 @@ export function AdminShell({
               </div>
             </Link>
             {user ? (
-              <div className="mt-5">
-                <AdminUserCard
-                  name={user.name}
-                  username={user.username}
-                  role={user.role}
-                />
+              <div className="mt-4 sm:mt-5">
+                <AdminUserCard username={user.username} />
               </div>
             ) : null}
           </div>
 
-          <nav className="flex gap-1 overflow-x-auto px-3 py-4 lg:flex-1 lg:flex-col lg:overflow-visible">
+          <nav className="hidden flex-col gap-1 px-3 py-4 lg:flex lg:flex-1 lg:overflow-visible">
             {visibleNav.map((item) => {
               const active = isAdminNavActive(pathname, item.href);
               return (
@@ -128,48 +110,67 @@ export function AdminShell({
 
         {/* Main */}
         <main className="min-w-0 flex-1 lg:pl-64">
-          <header className="sticky top-0 z-20 border-b border-white/[0.06] bg-black/60 px-4 py-4 backdrop-blur-xl sm:px-6 lg:px-10 lg:pt-6">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.3em] text-gold/70">
+          <header className="sticky top-0 z-20 border-b border-white/[0.06] bg-black/60 px-4 py-3 backdrop-blur-xl sm:px-5 sm:py-4 lg:px-6 lg:pt-6 xl:px-8">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-[9px] uppercase tracking-[0.28em] text-gold/70 sm:text-[10px] sm:tracking-[0.3em]">
                   {activeItem?.label ?? "Admin"}
                 </p>
-                <h1 className="mt-1 font-display text-2xl text-white sm:text-3xl md:text-4xl">
+                <h1 className="mt-1 font-display text-xl leading-tight text-white xs:text-2xl sm:text-3xl md:text-4xl">
                   {title}
                 </h1>
                 {subtitle ? (
-                  <p className="mt-2 max-w-2xl text-sm text-white/50">{subtitle}</p>
+                  <p className="mt-1.5 max-w-2xl text-xs leading-relaxed text-white/50 sm:mt-2 sm:text-sm">
+                    {subtitle}
+                  </p>
                 ) : null}
               </div>
-              <button
-                type="button"
-                onClick={logout}
-                className="shrink-0 rounded-xl border border-white/10 px-4 py-2 text-[10px] uppercase tracking-[0.15em] text-white/50 lg:hidden"
-              >
-                Out
-              </button>
+              <div className="flex shrink-0 items-center gap-2">
+                {actions ? (
+                  <div className="hidden items-center gap-2 sm:flex">{actions}</div>
+                ) : null}
+                <div className="flex items-center gap-2 lg:hidden">
+                  <Link
+                    href="/"
+                    target="_blank"
+                    className="rounded-lg border border-white/10 px-2.5 py-2 text-[9px] uppercase tracking-[0.12em] text-white/45"
+                  >
+                    Site
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={logout}
+                    className="rounded-lg border border-white/10 px-2.5 py-2 text-[9px] uppercase tracking-[0.12em] text-white/50"
+                  >
+                    Out
+                  </button>
+                </div>
+              </div>
             </div>
+            {actions ? (
+              <div className="mt-3 flex flex-wrap items-center gap-2 sm:hidden">{actions}</div>
+            ) : null}
           </header>
 
-          {/* Main tabs — same options as sidebar, always visible */}
+          {/* Mobile / tablet nav — desktop uses sidebar */}
           <nav
-            className="border-b border-white/[0.06] bg-black/50 backdrop-blur-md"
+            className="border-b border-white/[0.06] bg-black/50 backdrop-blur-md lg:hidden"
             aria-label="Admin sections"
           >
-            <div className="flex gap-1.5 overflow-x-auto px-4 py-3 sm:px-6 lg:px-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex snap-x snap-mandatory gap-2 overflow-x-auto px-4 py-3 sm:px-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {visibleNav.map((item) => {
                 const active = isAdminNavActive(pathname, item.href);
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-[10px] font-medium uppercase tracking-[0.14em] transition ${
+                    className={`flex shrink-0 snap-start items-center gap-1.5 rounded-full px-3.5 py-2 text-[9px] font-medium uppercase tracking-[0.12em] transition xs:px-4 xs:text-[10px] xs:tracking-[0.14em] ${
                       active
                         ? "bg-gradient-to-r from-gold-dark via-gold to-gold-light text-black shadow-[0_4px_20px_-6px_rgba(201,169,98,0.5)]"
                         : "border border-white/10 bg-white/[0.03] text-white/55 hover:border-gold/25 hover:text-white"
                     }`}
                   >
-                    <span className="text-xs opacity-90" aria-hidden>
+                    <span className="text-[10px] opacity-90 xs:text-xs" aria-hidden>
                       {item.icon}
                     </span>
                     {item.label}
@@ -179,7 +180,7 @@ export function AdminShell({
             </div>
           </nav>
 
-          <div className="px-4 py-8 sm:px-6 lg:px-10 lg:pb-16">{children}</div>
+          <div className="px-4 py-5 sm:px-5 sm:py-6 lg:px-6 lg:pb-12 xl:px-8">{children}</div>
         </main>
       </div>
     </div>

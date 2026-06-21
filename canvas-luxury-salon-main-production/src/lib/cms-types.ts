@@ -76,6 +76,12 @@ export type CmsCourseApplication = {
   courseId: string;
   courseSlug: string;
   courseTitle: string;
+  /** Snapshot of course fee at apply time (e.g. Rs. 45,000). */
+  courseFee?: string;
+  courseDuration?: string;
+  courseInstructor?: string;
+  courseNextBatch?: string;
+  courseShortDescription?: string;
   name: string;
   email: string;
   phone: string;
@@ -120,6 +126,107 @@ export type AdminSessionUser = {
   username: string;
 };
 
+export type CmsHomeCard = {
+  id: string;
+  name: string;
+  price: string;
+  image: string;
+  active: boolean;
+  sortOrder: number;
+};
+
+export type CmsHomeCategorySection = {
+  kicker: string;
+  title: string;
+  subtitle: string;
+  viewAllHref: string;
+  viewAllLabel: string;
+  sectionIndex: string;
+  variant: "default" | "alt";
+  cards: CmsHomeCard[];
+};
+
+export type CmsHomeHeroTrust = {
+  value: string;
+  label: string;
+  hint: string;
+};
+
+export type CmsHomeHero = {
+  imageUrl: string;
+  badgeText: string;
+  kicker: string;
+  titleLine1: string;
+  titleLine2: string;
+  description: string;
+  footnote: string;
+  primaryBtnLabel: string;
+  primaryBtnHref: string;
+  secondaryBtnLabel: string;
+  secondaryBtnHref: string;
+  trustItems: CmsHomeHeroTrust[];
+};
+
+export type CmsHomeSectionMeta = {
+  kicker: string;
+  title: string;
+  subtitle: string;
+  sectionIndex: string;
+};
+
+export type CmsHomeWhyCard = {
+  id: string;
+  title: string;
+  desc: string;
+};
+
+export type CmsHomeStep = {
+  id: string;
+  number: string;
+  title: string;
+  desc: string;
+};
+
+export type CmsHomeTestimonial = {
+  id: string;
+  quote: string;
+  name: string;
+  role: string;
+};
+
+export type CmsHomeCtaProof = {
+  id: string;
+  name: string;
+  event: string;
+  line: string;
+};
+
+export type CmsHomeCta = {
+  trustPoints: string[];
+  proofCards: CmsHomeCtaProof[];
+  title: string;
+  subtitle: string;
+  buttonLabel: string;
+  buttonHref: string;
+};
+
+export type CmsHomePage = {
+  hero: CmsHomeHero;
+  makeup: CmsHomeCategorySection;
+  offers: CmsHomeSectionMeta;
+  hair: CmsHomeCategorySection;
+  facial: CmsHomeCategorySection;
+  nails: CmsHomeCategorySection;
+  waxing: CmsHomeCategorySection;
+  mehndi: CmsHomeCategorySection;
+  why: CmsHomeSectionMeta & { cards: CmsHomeWhyCard[] };
+  team: CmsHomeSectionMeta;
+  steps: CmsHomeSectionMeta & { items: CmsHomeStep[] };
+  testimonials: CmsHomeSectionMeta & { items: CmsHomeTestimonial[] };
+  cta: CmsHomeCta;
+  updatedAt: string;
+};
+
 export const ADMIN_PERMISSIONS = {
   "bookings.view": ["owner", "reception", "contact"] as AdminRole[],
   "bookings.update": ["owner", "reception"] as AdminRole[],
@@ -134,6 +241,8 @@ export const ADMIN_PERMISSIONS = {
   "courses.manage": ["owner"] as AdminRole[],
   "course-applications.view": ["owner", "reception", "contact"] as AdminRole[],
   "course-applications.update": ["owner", "reception"] as AdminRole[],
+  "home.view": ["owner", "reception"] as AdminRole[],
+  "home.manage": ["owner"] as AdminRole[],
   "users.manage": ["owner"] as AdminRole[],
 } as const;
 

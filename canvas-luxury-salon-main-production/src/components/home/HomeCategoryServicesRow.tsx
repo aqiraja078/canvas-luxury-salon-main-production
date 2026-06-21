@@ -41,7 +41,7 @@ export function HomeCategoryServicesRow({
         index={sectionIndex}
       />
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-3 md:grid-cols-3 md:gap-5 lg:grid-cols-5">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-3 md:grid-cols-3 md:gap-5 lg:grid-cols-5 lg:gap-4 xl:gap-5">
         {cards.map((card, idx) => (
           <Reveal key={card.id} delay={idx * 0.06} scale>
             <article className="home-category-card group">
@@ -49,27 +49,36 @@ export function HomeCategoryServicesRow({
                 {String(idx + 1).padStart(2, "0")}
               </span>
               <div className="home-category-card__media relative w-full overflow-hidden">
-                <Image
-                  src={card.image}
-                  alt={card.name}
-                  fill
-                  className="object-cover transition duration-700 group-hover:scale-110"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 45vw, 18vw"
-                />
+                {card.image.startsWith("/api/") ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={card.image}
+                    alt={card.name}
+                    className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-110"
+                  />
+                ) : (
+                  <Image
+                    src={card.image}
+                    alt={card.name}
+                    fill
+                    className="object-cover transition duration-700 group-hover:scale-110"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 45vw, 18vw"
+                  />
+                )}
                 <div className="absolute inset-0 overlay-dark-heavy" />
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_50%,rgba(201,169,98,0.12),transparent)]" />
               </div>
 
               <div className="home-category-card__footer">
-                <p className="line-clamp-2 text-center font-display text-sm font-bold text-white sm:text-base">
+                <p className="line-clamp-2 text-center font-display text-sm font-bold text-white sm:text-base lg:text-lg xl:text-xl">
                   {card.name}
                 </p>
-                <p className="mt-1.5 text-center font-display text-xs font-bold text-gold-accent sm:text-sm">
+                <p className="mt-1.5 text-center font-display text-xs font-bold text-gold-accent sm:text-sm lg:text-base">
                   {card.price}
                 </p>
                 <Link
                   href={`/book?service=${encodeURIComponent(card.name)}`}
-                  className="btn-gold-premium mt-3 w-full py-2 text-[10px] sm:text-[11px]"
+                  className="btn-gold-premium mt-3 w-full py-2 text-[10px] sm:text-[11px] lg:py-3 lg:text-xs"
                 >
                   Book now
                 </Link>

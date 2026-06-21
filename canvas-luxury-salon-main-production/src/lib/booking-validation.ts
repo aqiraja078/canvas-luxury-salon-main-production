@@ -31,7 +31,10 @@ export type ValidatedBookingInput = {
   message?: string;
 };
 
-export function validateBookingBody(body: unknown):
+export function validateBookingBody(
+  body: unknown,
+  options?: { allowPastDates?: boolean }
+):
   | { ok: true; data: ValidatedBookingInput }
   | { ok: false; error: string; status: number } {
   if (body === null || typeof body !== "object") {
@@ -74,7 +77,7 @@ export function validateBookingBody(body: unknown):
   }
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  if (parsed < today) {
+  if (!options?.allowPastDates && parsed < today) {
     return { ok: false, error: "Date cannot be in the past.", status: 400 };
   }
   const max = new Date();
@@ -89,6 +92,46 @@ export function validateBookingBody(body: unknown):
   return {
     ok: true,
     data: { name, email, phone, service, date, time, message },
+  };
+}
+
+export type ValidatedAdminBookingInput = ValidatedBookingInput & {
+  status?: BookingStatus;
+  priceLabel?: string;
+};
+
+type BookingStatus = "pending" | "confirmed" | "cancelled";
+
+export function validateAdminBookingBody(body: unknown):
+  | { ok: true; data: ValidatedAdminBookingInput }
+  | { ok: false; error: string; status: number } {
+  const checked = validateBookingBody(body, { allowPastDates: true });
+  if (!checked.ok) return checked;
+
+  const b = body as Record<string, unknown>;
+  const statusRaw = b.status;
+  const status =
+    statusRaw === undefined || statusRaw === null || statusRaw === ""
+      ? undefined
+      : String(statusRaw).trim();
+
+  if (status && !["pending", "confirmed", "cancelled"].includes(status)) {
+    return { ok: false, error: "Invalid status.", status: 400 };
+  }
+
+  const priceLabelRaw = b.priceLabel;
+  const priceLabel =
+    priceLabelRaw === undefined || priceLabelRaw === null || priceLabelRaw === ""
+      ? undefined
+      : clamp(String(priceLabelRaw), 80);
+
+  return {
+    ok: true,
+    data: {
+      ...checked.data,
+      status: status as BookingStatus | undefined,
+      priceLabel,
+    },
   };
 }
 

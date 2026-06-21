@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { bodySpaServiceSections } from "@/lib/body-spa-services-data";
+import { waxingServiceSections } from "@/lib/waxing-services-data";
 import type { CmsService, ServiceCategorySlug } from "@/lib/cms-types";
 import { facialServiceSections } from "@/lib/facial-services-data";
 import { hairServiceSections } from "@/lib/hair-services-data";
@@ -22,20 +22,20 @@ function now() {
   return new Date().toISOString();
 }
 
-export function buildSeedServices(): CmsService[] {
-  const items: CmsService[] = [];
-  let order = 0;
+type PushFn = (
+  categorySlug: ServiceCategorySlug,
+  section: { id: string; emoji: string; title: string },
+  service: {
+    name: string;
+    description: string;
+    price: string;
+    duration?: string;
+  }
+) => void;
 
-  const push = (
-    categorySlug: ServiceCategorySlug,
-    section: { id: string; emoji: string; title: string },
-    service: {
-      name: string;
-      description: string;
-      price: string;
-      duration?: string;
-    }
-  ) => {
+function createPush(items: CmsService[], startOrder: number): { push: PushFn; nextOrder: () => number } {
+  let order = startOrder;
+  const push: PushFn = (categorySlug, section, service) => {
     items.push({
       id: randomUUID(),
       categorySlug,
@@ -59,6 +59,124 @@ export function buildSeedServices(): CmsService[] {
       updatedAt: now(),
     });
   };
+  return { push, nextOrder: () => order };
+}
+
+/** Replaceable facial menu rows for CMS sync. */
+export function buildFacialSeedServices(startOrder = 0): CmsService[] {
+  const items: CmsService[] = [];
+  const { push } = createPush(items, startOrder);
+
+  for (const section of facialServiceSections) {
+    for (const s of section.services) {
+      push("facial", section, {
+        name: s.name,
+        description: s.description,
+        price: s.price,
+        duration: s.duration,
+      });
+    }
+  }
+
+  return items;
+}
+
+/** Replaceable makeup menu rows for CMS sync. */
+export function buildMakeupSeedServices(startOrder = 0): CmsService[] {
+  const items: CmsService[] = [];
+  const { push } = createPush(items, startOrder);
+
+  for (const section of makeupServiceSections) {
+    for (const s of section.services) {
+      push("makeup", section, {
+        name: s.name,
+        description: s.hint,
+        price: s.price,
+      });
+    }
+  }
+
+  return items;
+}
+
+/** Replaceable hair menu rows for CMS sync. */
+export function buildHairSeedServices(startOrder = 0): CmsService[] {
+  const items: CmsService[] = [];
+  const { push } = createPush(items, startOrder);
+
+  for (const section of hairServiceSections) {
+    for (const s of section.services) {
+      push("hair", section, {
+        name: s.name,
+        description: s.hint,
+        price: s.price,
+      });
+    }
+  }
+
+  return items;
+}
+
+/** Replaceable mehndi menu rows for CMS sync. */
+export function buildMehndiSeedServices(startOrder = 0): CmsService[] {
+  const items: CmsService[] = [];
+  const { push } = createPush(items, startOrder);
+
+  for (const section of mehndiServiceSections) {
+    for (const s of section.services) {
+      push("mehndi", section, {
+        name: s.name,
+        description: s.description,
+        price: s.price,
+        duration: s.duration,
+      });
+    }
+  }
+
+  return items;
+}
+
+/** Replaceable nails menu rows for CMS sync. */
+export function buildNailsSeedServices(startOrder = 0): CmsService[] {
+  const items: CmsService[] = [];
+  const { push } = createPush(items, startOrder);
+
+  for (const section of nailsServiceSections) {
+    for (const s of section.services) {
+      push("nails", section, {
+        name: s.name,
+        description: s.description,
+        price: s.price,
+        duration: s.duration,
+      });
+    }
+  }
+
+  return items;
+}
+
+/** Replaceable wax menu rows for CMS sync (body-spa category). */
+export function buildWaxSeedServices(startOrder = 0): CmsService[] {
+  const items: CmsService[] = [];
+  const { push } = createPush(items, startOrder);
+
+  for (const section of waxingServiceSections) {
+    for (const s of section.services) {
+      push("body-spa", section, {
+        name: s.name,
+        description: s.description,
+        price: s.price,
+        duration: s.duration,
+      });
+    }
+  }
+
+  return items;
+}
+
+export function buildSeedServices(): CmsService[] {
+  const items: CmsService[] = [];
+  const { push } = createPush(items, 0);
 
   for (const section of hairServiceSections) {
     for (const s of section.services) {
@@ -91,7 +209,7 @@ export function buildSeedServices(): CmsService[] {
     }
   }
 
-  for (const section of bodySpaServiceSections) {
+  for (const section of waxingServiceSections) {
     for (const s of section.services) {
       push("body-spa", section, {
         name: s.name,
@@ -133,21 +251,6 @@ export function buildSeedServices(): CmsService[] {
       price: string;
     }>;
   }> = [
-    {
-      categorySlug: "body-spa",
-      section: {
-        id: "waxing",
-        emoji: "✨",
-        title: "Body waxing",
-      },
-      services: [
-        {
-          name: "Body Waxing",
-          description: "Full or partial waxing with gentle prep and aftercare.",
-          price: "From Rs. 2,500",
-        },
-      ],
-    },
     {
       categorySlug: "hair",
       section: {

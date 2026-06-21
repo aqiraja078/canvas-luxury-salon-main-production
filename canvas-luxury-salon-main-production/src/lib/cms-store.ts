@@ -41,14 +41,25 @@ export async function readCmsJson<T>(key: string, fallback: T): Promise<T> {
   }
 }
 
+async function writeLocalCmsJson(key: string, serialized: string): Promise<void> {
+  try {
+    await ensureDataDir();
+    await fs.writeFile(localFileForKey(key), serialized, "utf-8");
+  } catch (err) {
+    // Netlify runtime filesystem is read-only — blobs are the source of truth there.
+    console.warn(`[cms-store] local write skipped for ${key}:`, err);
+  }
+}
+
 export async function writeCmsJson<T>(key: string, value: T): Promise<void> {
   const store = await getCmsBlobStore();
   const serialized = JSON.stringify(value, null, 2);
 
   if (store) {
     await store.set(key, serialized);
+    await writeLocalCmsJson(key, serialized);
+    return;
   }
 
-  await ensureDataDir();
-  await fs.writeFile(localFileForKey(key), serialized, "utf-8");
+  await writeLocalCmsJson(key, serialized);
 }

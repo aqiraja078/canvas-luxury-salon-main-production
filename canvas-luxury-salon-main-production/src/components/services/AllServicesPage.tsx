@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { Reveal } from "@/components/ui/Reveal";
-import { PremiumServiceCard } from "@/components/services/PremiumServiceCard";
+import { CategoryServiceCard } from "@/components/services/CategoryServiceCard";
 import type { ServiceThemeId } from "@/components/services/ServiceCategoryPage";
 import { ServiceCategoryHero } from "@/components/services/ServiceCategoryHero";
+import { enrichHairMenuSections } from "@/lib/hair-menu";
 import {
   getActiveServices,
   groupAllServicesByCategory,
@@ -41,7 +42,7 @@ export async function AllServicesPage() {
               All services
             </h1>
             <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/70 sm:mt-5 sm:text-base">
-              Browse every hair, makeup, facial, spa, nails, and mehndi service
+              Browse every hair, makeup, facial, wax, nails, and mehndi service
               in one place — scroll the full menu below.
             </p>
             <div className="mt-5 flex flex-col gap-3 sm:mt-6 sm:flex-row sm:items-center">
@@ -66,7 +67,11 @@ export async function AllServicesPage() {
         const meta = serviceCategories.find((c) => c.slug === cat.slug);
         if (!meta) return null;
         const theme = SLUG_THEME[cat.slug];
-        const serviceCount = cat.sections.reduce(
+        const sections =
+          cat.slug === "hair"
+            ? enrichHairMenuSections(cat.sections)
+            : cat.sections;
+        const serviceCount = sections.reduce(
           (n, sec) => n + sec.services.length,
           0
         );
@@ -103,7 +108,7 @@ export async function AllServicesPage() {
                 <div className="mt-3 h-px w-20 bg-gradient-to-r from-gold/70 to-transparent" />
               </Reveal>
 
-              {cat.sections.map((section) => (
+              {sections.map((section) => (
                 <div key={section.id} className="mt-8 sm:mt-10">
                   <Reveal>
                     <h3 className="font-display text-lg text-white sm:text-xl">
@@ -119,7 +124,7 @@ export async function AllServicesPage() {
                         key={item.id || item.name}
                         delay={Math.min(idx * 0.02, 0.15)}
                       >
-                        <PremiumServiceCard item={item} theme={theme} />
+                        <CategoryServiceCard item={item} theme={theme} />
                       </Reveal>
                     ))}
                   </div>

@@ -157,3 +157,41 @@ export const homeMehndiCards: HomeCategoryCard[] = [
       "https://i.pinimg.com/736x/ae/84/5f/ae845fba0f519d795710e90bf6a866ec.jpg",
   },
 ];
+
+export const homeNailsCards: HomeCategoryCard[] = [
+  {
+    id: "gel-manicure",
+    name: "Gel Manicure",
+    price: "From Rs. 2,800",
+    image:
+      "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=800&q=85",
+  },
+  {
+    id: "classic-pedicure",
+    name: "Classic Pedicure",
+    price: "From Rs. 2,200",
+    image:
+      "https://images.unsplash.com/photo-1519014817438-62904cad3119?w=800&q=85",
+  },
+  {
+    id: "bridal-nail-art",
+    name: "Bridal Nail Art",
+    price: "From Rs. 2,500",
+    image:
+      "https://images.unsplash.com/photo-1632345031431-239fe447a2b9?w=800&q=85",
+  },
+  {
+    id: "acrylic-extensions",
+    name: "Acrylic Extensions",
+    price: "From Rs. 3,500",
+    image:
+      "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=800&q=85",
+  },
+  {
+    id: "french-manicure",
+    name: "French Manicure",
+    price: "From Rs. 1,800",
+    image:
+      "https://images.unsplash.com/photo-1610992015732-2449b7638982?w=800&q=85",
+  },
+];

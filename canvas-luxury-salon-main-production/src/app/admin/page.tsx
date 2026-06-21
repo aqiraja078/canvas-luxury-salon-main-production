@@ -5,18 +5,19 @@ import Link from "next/link";
 import { AdminShell } from "@/components/admin/AdminShell";
 import {
   computeMonthlyConfirmedSale,
+  computeMonthlyEnrolledCourseRevenue,
   countApplicationsByStatus,
   countBookingsByStatus,
   currentMonthLabel,
   formatPkr,
 } from "@/lib/admin-dashboard-stats";
 import { adminCookieName, parseSessionToken } from "@/lib/admin-session";
+import { toAdminSessionUser } from "@/lib/admin-session-user";
 import { getBookings } from "@/lib/bookings-store";
 import { getCourseApplications } from "@/lib/course-applications-store";
 import { getCourses } from "@/lib/courses-store";
 import { hasPermission } from "@/lib/cms-types";
 import { getOffers } from "@/lib/offers-store";
-import { getServices } from "@/lib/services-store";
 import { getTeamMembers } from "@/lib/team-store";
 
 export const metadata: Metadata = {
@@ -37,38 +38,37 @@ export default async function AdminDashboardPage() {
   const session = parseSessionToken(jar.get(adminCookieName)?.value);
   if (!session) redirect("/admin/login");
 
-  const [bookings, services, offers, courses, applications, team] =
-    await Promise.all([
-      hasPermission(session.role, "bookings.view")
-        ? getBookings()
-        : Promise.resolve([]),
-      hasPermission(session.role, "services.view")
-        ? getServices()
-        : Promise.resolve([]),
-      hasPermission(session.role, "offers.view")
-        ? getOffers()
-        : Promise.resolve([]),
-      hasPermission(session.role, "courses.view")
-        ? getCourses()
-        : Promise.resolve([]),
-      hasPermission(session.role, "course-applications.view")
-        ? getCourseApplications()
-        : Promise.resolve([]),
-      hasPermission(session.role, "team.view")
-        ? getTeamMembers()
-        : Promise.resolve([]),
-    ]);
-
-  const bookingCounts = countBookingsByStatus(bookings);
-  const applicationCounts = countApplicationsByStatus(applications);
-  const monthSale = computeMonthlyConfirmedSale(bookings);
-  const monthLabel = currentMonthLabel();
-
-  const canViewBookings = hasPermission(session.role, "bookings.view");
   const canViewApplications = hasPermission(
     session.role,
     "course-applications.view"
   );
+  const canViewCourses =
+    hasPermission(session.role, "courses.view") || canViewApplications;
+
+  const [bookings, offers, courses, applications, team] = await Promise.all([
+    hasPermission(session.role, "bookings.view")
+      ? getBookings()
+      : Promise.resolve([]),
+    hasPermission(session.role, "offers.view")
+      ? getOffers()
+      : Promise.resolve([]),
+    canViewCourses ? getCourses() : Promise.resolve([]),
+    canViewApplications ? getCourseApplications() : Promise.resolve([]),
+    hasPermission(session.role, "team.view")
+      ? getTeamMembers()
+      : Promise.resolve([]),
+  ]);
+
+  const bookingCounts = countBookingsByStatus(bookings);
+  const applicationCounts = countApplicationsByStatus(applications);
+  const monthSale = computeMonthlyConfirmedSale(bookings);
+  const monthCourseRevenue = computeMonthlyEnrolledCourseRevenue(
+    applications,
+    courses
+  );
+  const monthLabel = currentMonthLabel();
+
+  const canViewBookings = hasPermission(session.role, "bookings.view");
 
   const cards: DashboardCard[] = [
     {
@@ -97,10 +97,11 @@ export default async function AdminDashboardPage() {
       show: canViewBookings,
     },
     {
-      href: "/admin/services",
-      label: "Active services",
-      value: String(services.filter((s) => s.active).length),
-      show: hasPermission(session.role, "services.view"),
+      href: "/admin/course-applications",
+      label: `${monthLabel} course revenue`,
+      value: formatPkr(monthCourseRevenue),
+      show: canViewApplications,
+      valueClassName: "text-2xl sm:text-3xl",
     },
     {
       href: "/admin/offers",
@@ -148,22 +149,23 @@ export default async function AdminDashboardPage() {
 
   return (
     <AdminShell
+      sessionUser={toAdminSessionUser(session)}
       title="Dashboard"
       subtitle="Overview of bookings, services, offers, and team — everything at a glance."
     >
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {cards.map((c) => (
           <Link
             key={`${c.href}-${c.label}`}
             href={c.href}
-            className="group rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.05] to-transparent p-6 transition hover:border-gold/35 hover:shadow-[0_12px_40px_-12px_rgba(201,169,98,0.3)]"
+            className="group rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.05] to-transparent p-4 transition hover:border-gold/35 hover:shadow-[0_12px_40px_-12px_rgba(201,169,98,0.3)] sm:p-6"
           >
             <p
-              className={`font-bold text-gold-light transition group-hover:scale-105 ${c.valueClassName ?? "text-4xl"}`}
+              className={`font-bold text-gold-light transition group-hover:scale-105 ${c.valueClassName ?? "text-2xl sm:text-4xl"}`}
             >
               {c.value}
             </p>
-            <p className="mt-3 text-[10px] uppercase tracking-[0.2em] text-white/50">
+            <p className="mt-2 text-[9px] uppercase tracking-[0.16em] text-white/50 sm:mt-3 sm:text-[10px] sm:tracking-[0.2em]">
               {c.label}
             </p>
           </Link>

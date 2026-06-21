@@ -6,6 +6,7 @@ import {
   getServicesByCategory,
   groupServicesForMenu,
 } from "@/lib/services-store";
+import { enrichHairMenuSections } from "@/lib/hair-menu";
 import type { ServiceCategorySlug } from "@/lib/cms-types";
 import { site } from "@/lib/site";
 
@@ -60,14 +61,14 @@ const CONFIGS: Record<ServiceCategorySlug, CategoryConfig> = {
   "body-spa": {
     slug: "body-spa",
     theme: "bodySpa",
-    heroIcon: "💆‍♀️",
-    heroHighlight: "Massage · Hammam · Wax",
-    kicker: "Body wellness",
-    title: "Body & spa",
+    heroIcon: "✨",
+    heroHighlight: "Face · Arms · Legs · Body · Premium",
+    kicker: "Waxing at home",
+    title: "Wax",
     description:
-      "Swedish calm, hammam glow, waxing, and detox rituals — unwind without leaving home. Hygienic linens and premium oils every visit.",
+      "Full and half body wax, underarms, legs, face, and bridal packages — hygienic prep, gentle technique, and soothing aftercare every visit.",
     footerNote:
-      "Tell us about allergies or pregnancy — we adapt products and pressure accordingly.",
+      "Tell us about sensitive skin or allergies — we choose the right wax and patch-test when needed.",
   },
   nails: {
     slug: "nails",
@@ -102,7 +103,10 @@ export async function DynamicCategoryPage({
 }) {
   const config = CONFIGS[slug];
   const services = await getServicesByCategory(slug);
-  const sections = groupServicesForMenu(services);
+  const sections =
+    slug === "hair"
+      ? enrichHairMenuSections(groupServicesForMenu(services))
+      : groupServicesForMenu(services);
 
   return (
     <ServiceCategoryPage

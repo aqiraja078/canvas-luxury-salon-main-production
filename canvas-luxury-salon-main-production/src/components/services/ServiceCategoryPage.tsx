@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Reveal } from "@/components/ui/Reveal";
 import { ServiceCategoryHero } from "@/components/services/ServiceCategoryHero";
-import { PremiumServiceCard } from "@/components/services/PremiumServiceCard";
+import { CategoryServiceCard } from "@/components/services/CategoryServiceCard";
 import type { ServiceMenuSection } from "@/components/services/service-menu-mappers";
 
 export type ServiceThemeId =
@@ -192,7 +192,7 @@ export function ServiceCategoryPage({
                   key={item.id || item.name}
                   delay={Math.min(idx * 0.025, 0.2)}
                 >
-                  <PremiumServiceCard item={item} theme={theme} />
+                  <CategoryServiceCard item={item} theme={theme} />
                 </Reveal>
               ))}
             </div>

@@ -8,6 +8,7 @@ import {
 import type { CmsService } from "@/lib/cms-types";
 import { getActiveOffers } from "@/lib/offers-store";
 import { getActiveServices } from "@/lib/services-store";
+import type { CmsHomeSectionMeta } from "@/lib/cms-types";
 import { getActiveTeamMembers } from "@/lib/team-store";
 import { serviceCategories } from "@/lib/site";
 
@@ -123,41 +124,46 @@ export async function HomeOffersDynamic() {
   );
 }
 
-export async function HomeTeamDynamic() {
+export async function HomeTeamDynamic({ meta }: { meta: CmsHomeSectionMeta }) {
   const team = await getActiveTeamMembers();
-  if (team.length === 0) return null;
 
   return (
-    <HomeSection tone="obsidian">
+    <HomeSection tone="obsidian" className="home-team-section">
       <HomeSectionHeader
-        kicker="Our team"
-        title="Artists behind your glow"
-        subtitle="Certified makeup artists, mehndi specialists, and hair stylists — all home-ready."
-        index="09"
+        kicker={meta.kicker}
+        title={meta.title}
+        subtitle={meta.subtitle}
+        index={meta.sectionIndex}
       />
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {team.slice(0, 3).map((m, idx) => (
-          <Reveal key={m.id} delay={idx * 0.08} scale>
-            <article className="home-team-card">
-              <div className="home-team-card__media">
-                {m.imageUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={m.imageUrl} alt={m.name} className="h-full w-full object-cover" />
-                ) : (
-                  <div className="flex h-full items-center justify-center text-4xl text-gold/50">
-                    {m.name.charAt(0)}
-                  </div>
-                )}
-              </div>
-              <div className="p-5">
-                <h3 className="font-display text-xl text-white">{m.name}</h3>
-                <p className="text-sm text-gold">{m.role}</p>
-                <p className="mt-2 line-clamp-2 text-sm text-white/60">{m.bio}</p>
-              </div>
-            </article>
-          </Reveal>
-        ))}
-      </div>
+      {team.length > 0 ? (
+        <div className="home-team-section__grid">
+          {team.map((m) => (
+            <div key={m.id} className="home-team-section__item">
+              <article className="home-team-card">
+                <div className="home-team-card__media">
+                  {m.imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={m.imageUrl} alt={m.name} className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-4xl text-gold/50">
+                      {m.name.charAt(0)}
+                    </div>
+                  )}
+                </div>
+                <div className="p-5">
+                  <h3 className="font-display text-xl text-white">{m.name}</h3>
+                  <p className="text-sm text-gold">{m.role}</p>
+                  <p className="mt-2 line-clamp-2 text-sm text-white/60">{m.bio}</p>
+                </div>
+              </article>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="home-team-section__empty">
+          Team profiles will appear here once active members are added in admin.
+        </p>
+      )}
     </HomeSection>
   );
 }

@@ -1,52 +1,33 @@
 import Image from "next/image";
 import Link from "next/link";
-import { site } from "@/lib/site";
+import type { CmsHomeHero } from "@/lib/cms-types";
 
-const heroImage =
-  "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1920&q=85";
-
-const trustItems = [
-  {
-    value: "3 cities",
-    label: "Jhelum · Dina · Gujrat",
-    hint: "We travel to you",
-  },
-  {
-    value: "8AM – 10PM",
-    label: "Morning to evening",
-    hint: "Flexible home slots",
-  },
-  {
-    value: "Full setup",
-    label: "Light · mirror · kit",
-    hint: "Salon at your door",
-  },
-  {
-    value: "48 hrs",
-    label: "Booking confirmed",
-    hint: "Clear quote upfront",
-  },
-] as const;
-
-export function HomeHeroAnimated() {
-  const salonName = site.name.split(" ")[0];
-
+export function HomeHero({ hero }: { hero: CmsHomeHero }) {
   return (
     <section className="home-hero" aria-label="Welcome">
       <div className="home-hero__media">
-        <Image
-          src={heroImage}
-          alt="Luxury home beauty service atmosphere"
-          fill
-          priority
-          className="home-hero__image object-cover object-[center_38%] sm:object-[center_32%] md:object-[center_28%]"
-          sizes="100vw"
-        />
+        {hero.imageUrl.startsWith("/api/") ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={hero.imageUrl}
+            alt="Luxury home beauty service atmosphere"
+            className="home-hero__image absolute inset-0 h-full w-full object-cover object-[center_38%] sm:object-[center_32%] md:object-[center_28%]"
+          />
+        ) : (
+          <Image
+            src={hero.imageUrl}
+            alt="Luxury home beauty service atmosphere"
+            fill
+            priority
+            className="home-hero__image object-cover object-[center_38%] sm:object-[center_32%] md:object-[center_28%]"
+            sizes="100vw"
+          />
+        )}
       </div>
 
       <div className="home-hero__overlay" aria-hidden="true" />
       <span className="home-hero__monogram" aria-hidden="true">
-        {salonName.charAt(0)}
+        {hero.badgeText.charAt(hero.badgeText.length - 1) || "H"}
       </span>
       <div className="home-hero__frame" aria-hidden="true" />
 
@@ -55,44 +36,44 @@ export function HomeHeroAnimated() {
           <div className="home-hero__badge-row home-hero__reveal home-hero__reveal--1">
             <span className="home-hero__badge">
               <span className="home-hero__badge-dot" aria-hidden="true" />
-              Doorstep luxury · {salonName}
+              {hero.badgeText}
             </span>
           </div>
 
           <div className="home-hero__kicker-wrap home-hero__reveal home-hero__reveal--2">
             <span className="home-hero__kicker-line" aria-hidden="true" />
-            <p className="home-hero__kicker">{site.tagline}</p>
+            <p className="home-hero__kicker">{hero.kicker}</p>
             <span className="home-hero__kicker-line" aria-hidden="true" />
           </div>
 
           <h1 className="home-hero__title home-hero__reveal home-hero__reveal--3">
-            <span className="home-hero__title-line">Salon-grade beauty,</span>
-            <span className="home-hero__title-accent">without leaving home</span>
+            <span className="home-hero__title-line">{hero.titleLine1}</span>
+            <span className="home-hero__title-accent">{hero.titleLine2}</span>
           </h1>
 
           <div className="home-hero__lead-wrap home-hero__reveal home-hero__reveal--4">
             <span className="home-hero__lead-accent" aria-hidden="true" />
-            <p className="home-hero__lead">{site.description}</p>
+            <p className="home-hero__lead">{hero.description}</p>
           </div>
 
           <div className="home-hero__actions home-hero__reveal home-hero__reveal--5">
-            <Link href="/book" className="home-hero__btn home-hero__btn--primary">
-              Book appointment
+            <Link href={hero.primaryBtnHref} className="home-hero__btn home-hero__btn--primary">
+              {hero.primaryBtnLabel}
             </Link>
-            <Link href="/services" className="home-hero__btn home-hero__btn--ghost">
-              Explore services
+            <Link href={hero.secondaryBtnHref} className="home-hero__btn home-hero__btn--ghost">
+              {hero.secondaryBtnLabel}
             </Link>
           </div>
 
           <p className="home-hero__footnote home-hero__reveal home-hero__reveal--6">
-            Bridal · Mehndi · Hair · Skin · Nails — one message away on WhatsApp
+            {hero.footnote}
           </p>
         </div>
 
         <div className="home-hero__trust-wrap">
-          {trustItems.map((stat, idx) => (
+          {hero.trustItems.map((stat, idx) => (
             <div
-              key={stat.label}
+              key={`${stat.label}-${idx}`}
               className={`home-hero__trust-item home-hero__reveal home-hero__reveal--trust-${idx + 1}`}
             >
               <span className="home-hero__trust-value">{stat.value}</span>

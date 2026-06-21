@@ -5,6 +5,8 @@ import type { MakeupServiceSection } from "@/lib/makeup-services-data";
 import type { MehndiServiceSection } from "@/lib/mehndi-services-data";
 import type { NailsServiceSection } from "@/lib/nails-services-data";
 
+import type { HairLengthPricing } from "@/lib/hair-services-data";
+
 export type ServiceMenuItem = {
   id?: string;
   name: string;
@@ -13,6 +15,7 @@ export type ServiceMenuItem = {
   meta?: string;
   imageUrl?: string;
   featured?: boolean;
+  lengthPricing?: HairLengthPricing;
 };
 
 export type ServiceMenuSection = {
@@ -31,6 +34,7 @@ export function hairToMenu(sections: HairServiceSection[]): ServiceMenuSection[]
       name: i.name,
       price: i.price,
       blurb: i.hint,
+      lengthPricing: i.lengthPricing,
     })),
   }));
 }

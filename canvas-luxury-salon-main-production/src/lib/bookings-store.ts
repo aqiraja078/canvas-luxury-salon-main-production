@@ -74,14 +74,14 @@ export async function getBookings(): Promise<Booking[]> {
 }
 
 export async function addBooking(
-  input: Omit<Booking, "id" | "status" | "createdAt">
+  input: Omit<Booking, "id" | "createdAt"> & { status?: BookingStatus }
 ): Promise<Booking> {
   try {
     const list = await getBookings();
     const booking: Booking = {
       ...input,
       id: randomUUID(),
-      status: "pending",
+      status: input.status ?? "pending",
       createdAt: new Date().toISOString(),
     };
 

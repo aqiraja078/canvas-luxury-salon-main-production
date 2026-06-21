@@ -5,8 +5,8 @@ import type { CmsTeamMember } from "@/lib/cms-types";
 const KEY = "team";
 
 async function ensureSeeded() {
-  const list = await readCmsJson<CmsTeamMember[]>(KEY, []);
-  if (list.length > 0) return;
+  const list = await readCmsJson<CmsTeamMember[] | null>(KEY, null);
+  if (list && list.length > 0) return;
   const ts = new Date().toISOString();
   const seed: CmsTeamMember[] = [
     {

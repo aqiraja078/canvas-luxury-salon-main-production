@@ -1,0 +1,19 @@
+import type { ServiceMenuSection } from "@/components/services/service-menu-mappers";
+import { findHairServiceByName } from "@/lib/hair-services-data";
+
+export function enrichHairMenuSections(
+  sections: ServiceMenuSection[]
+): ServiceMenuSection[] {
+  return sections.map((section) => ({
+    ...section,
+    services: section.services.map((item) => {
+      const hair = findHairServiceByName(item.name);
+      if (!hair) return item;
+      return {
+        ...item,
+        price: hair.price,
+        lengthPricing: hair.lengthPricing,
+      };
+    }),
+  }));
+}

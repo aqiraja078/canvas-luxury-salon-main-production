@@ -1,8 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { BOOKING_FIELD_LIMITS } from "@/lib/booking-validation";
+import {
+  buildHairBookingServiceName,
+  type HairLength,
+} from "@/lib/hair-services-data";
 import { bookingServices } from "@/lib/site";
 
 const times = Array.from({ length: 15 }, (_, i) =>
@@ -11,22 +16,76 @@ const times = Array.from({ length: 15 }, (_, i) =>
 
 type BookingFormProps = { defaultService?: string; serviceOptions?: string[] };
 
-export function BookingForm({ defaultService, serviceOptions: serviceOptionsProp }: BookingFormProps) {
+export function BookingForm({
+  defaultService: defaultServiceProp,
+  serviceOptions: serviceOptionsProp,
+}: BookingFormProps) {
+  const searchParams = useSearchParams();
+  const hairLengthParam = searchParams.get("hairLength");
+  const hairPriceParam = searchParams.get("price");
+
+  const defaultService = useMemo(() => {
+    if (defaultServiceProp) return defaultServiceProp;
+    const fromUrl = searchParams.get("service");
+    if (!fromUrl) return undefined;
+    let serviceName = fromUrl;
+    try {
+      serviceName = decodeURIComponent(fromUrl);
+    } catch {
+      serviceName = fromUrl;
+    }
+    if (hairLengthParam && hairPriceParam) {
+      const amount = Number.parseInt(hairPriceParam.replace(/\D/g, ""), 10);
+      const length = hairLengthParam as HairLength;
+      if (amount > 0 && ["short", "medium", "long"].includes(length)) {
+        return buildHairBookingServiceName(serviceName, length, amount);
+      }
+    }
+    return serviceName;
+  }, [defaultServiceProp, searchParams, hairLengthParam, hairPriceParam]);
+
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "err">(
     "idle"
   );
   const [msg, setMsg] = useState("");
   const [serviceVal, setServiceVal] = useState("");
+  const [serviceOptionsFromApi, setServiceOptionsFromApi] = useState<
+    string[] | null
+  >(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/services")
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((data: Array<{ name: string; active?: boolean }>) => {
+        if (cancelled) return;
+        const names = Array.from(
+          new Set(
+            data.filter((s) => s.active !== false).map((s) => s.name.trim())
+          )
+        ).sort((a, b) => a.localeCompare(b));
+        if (names.length > 0) setServiceOptionsFromApi(names);
+      })
+      .catch(() => {
+        /* keep built-in bookingServices fallback */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const serviceOptions = useMemo(() => {
-    const base = serviceOptionsProp && serviceOptionsProp.length > 0
-      ? serviceOptionsProp
-      : bookingServices;
+    const base =
+      serviceOptionsProp && serviceOptionsProp.length > 0
+        ? serviceOptionsProp
+        : serviceOptionsFromApi && serviceOptionsFromApi.length > 0
+          ? serviceOptionsFromApi
+          : bookingServices;
     if (defaultService && !base.includes(defaultService)) {
       return [defaultService, ...base];
     }
     return base;
-  }, [defaultService, serviceOptionsProp]);
+  }, [defaultService, serviceOptionsProp, serviceOptionsFromApi]);
 
   useEffect(() => {
     if (defaultService) {
@@ -84,6 +143,11 @@ export function BookingForm({ defaultService, serviceOptions: serviceOptionsProp
       <div className="mb-2">
         <h3 className="font-display text-2xl font-bold text-white">Reserve Your Time</h3>
         <p className="mt-1 text-sm text-white/70">Fill in your details and pick your perfect time slot</p>
+        {defaultService && defaultService.includes(" · ") ? (
+          <p className="mt-3 rounded-xl border border-gold/30 bg-gold/10 px-4 py-3 text-sm text-gold-light">
+            Selected: <span className="font-semibold text-white">{defaultService}</span>
+          </p>
+        ) : null}
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">

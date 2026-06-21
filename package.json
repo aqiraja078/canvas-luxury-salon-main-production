@@ -4,6 +4,7 @@
   "scripts": {
     "postinstall": "npm install --prefix canvas-luxury-salon-main-production",
     "dev": "npm run dev --prefix canvas-luxury-salon-main-production",
+    "dev:clean": "npm run dev:clean --prefix canvas-luxury-salon-main-production",
     "build": "npm run build --prefix canvas-luxury-salon-main-production",
     "start": "npm run start --prefix canvas-luxury-salon-main-production",
     "lint": "npm run lint --prefix canvas-luxury-salon-main-production"

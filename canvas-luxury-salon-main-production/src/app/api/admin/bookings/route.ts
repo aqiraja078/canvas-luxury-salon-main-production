@@ -1,9 +1,50 @@
 import { NextResponse } from "next/server";
 import { requirePermission } from "@/lib/admin-auth";
-import { isBookingId } from "@/lib/booking-validation";
+import { validateAdminBookingBody, isBookingId } from "@/lib/booking-validation";
 import { notifyGuestOfBookingStatus } from "@/lib/booking-status-notifications";
-import { updateBookingStatus, deleteBooking } from "@/lib/bookings-store";
+import { addBooking, updateBookingStatus, deleteBooking } from "@/lib/bookings-store";
 import type { BookingStatus } from "@/lib/bookings-types";
+import { lookupServicePriceLabel } from "@/lib/service-pricing-lookup";
+
+export async function POST(request: Request) {
+  try {
+    await requirePermission("bookings.update");
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
+    }
+
+    const checked = validateAdminBookingBody(body);
+    if (!checked.ok) {
+      return NextResponse.json({ error: checked.error }, { status: checked.status });
+    }
+
+    const { name, email, phone, service, date, time, message, status, priceLabel } =
+      checked.data;
+
+    const booking = await addBooking({
+      name,
+      email,
+      phone,
+      service,
+      priceLabel: priceLabel?.trim() || lookupServicePriceLabel(service),
+      date,
+      time,
+      message,
+      status: status ?? "confirmed",
+    });
+
+    return NextResponse.json(booking, { status: 201 });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "Create failed";
+    return NextResponse.json(
+      { error: msg },
+      { status: msg === "Unauthorized" ? 401 : msg === "Forbidden" ? 403 : 500 }
+    );
+  }
+}
 
 export async function PATCH(request: Request) {
   try {

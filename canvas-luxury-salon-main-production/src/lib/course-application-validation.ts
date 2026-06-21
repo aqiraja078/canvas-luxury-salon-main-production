@@ -7,6 +7,8 @@ export const COURSE_APPLICATION_LIMITS = {
   message: 2000,
 } as const;
 
+import type { CourseApplicationStatus } from "@/lib/cms-types";
+
 type ValidBody = {
   courseId: string;
   name: string;
@@ -15,6 +17,10 @@ type ValidBody = {
   age?: string;
   city?: string;
   message?: string;
+};
+
+export type ValidAdminCourseApplicationBody = ValidBody & {
+  status?: CourseApplicationStatus;
 };
 
 function trimField(value: unknown, max: number): string {
@@ -68,6 +74,35 @@ export function validateCourseApplicationBody(
       age: age || undefined,
       city: city || undefined,
       message: message || undefined,
+    },
+  };
+}
+
+export function validateAdminCourseApplicationBody(parsed: unknown):
+  | { ok: true; data: ValidAdminCourseApplicationBody }
+  | { ok: false; error: string; status: number } {
+  const checked = validateCourseApplicationBody(parsed);
+  if (!checked.ok) return checked;
+
+  const body = parsed as Record<string, unknown>;
+  const statusRaw = body.status;
+  const status =
+    statusRaw === undefined || statusRaw === null || statusRaw === ""
+      ? undefined
+      : String(statusRaw).trim();
+
+  if (
+    status &&
+    !["pending", "contacted", "enrolled", "rejected"].includes(status)
+  ) {
+    return { ok: false, error: "Invalid status.", status: 400 };
+  }
+
+  return {
+    ok: true,
+    data: {
+      ...checked.data,
+      status: status as CourseApplicationStatus | undefined,
     },
   };
 }

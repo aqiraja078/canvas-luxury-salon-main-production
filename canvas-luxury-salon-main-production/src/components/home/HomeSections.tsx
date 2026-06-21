@@ -2,14 +2,15 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { Reveal } from "@/components/ui/Reveal";
-import { HomeCategoryServicesRow } from "@/components/home/HomeCategoryServicesRow";
 import { HomeAboutSection } from "@/components/home/HomeAboutSection";
-import { HomeHeroAnimated } from "@/components/home/HomeHeroAnimated";
 import {
   HomeSection,
   HomeSectionHeader,
 } from "@/components/home/HomeSection";
-import { homeMakeupCards } from "@/lib/makeup-home-cards";
+import type {
+  CmsHomeCta,
+  CmsHomePage,
+} from "@/lib/cms-types";
 import { serviceCategories, site } from "@/lib/site";
 
 const TestimonialSlider = dynamic(
@@ -35,32 +36,6 @@ const galleryImages = [
   "https://images.unsplash.com/photo-1519415943484-9fa1873496d4?w=600&q=80",
   "https://images.unsplash.com/photo-1596755389378-c31d21fd1273?w=600&q=80",
 ];
-
-const steps = [
-  { n: "01", title: "Book appointment", desc: "Share your date and preferred service." },
-  { n: "02", title: "Trial setup", desc: "Optional trial for bridal and special events." },
-  { n: "03", title: "Confirm booking", desc: "We confirm timing and personalize your plan." },
-  { n: "04", title: "Enjoy service", desc: "Relax — our artists take care of the rest." },
-];
-
-export function HomeHero() {
-  return <HomeHeroAnimated />;
-}
-
-/** Makeup feature row — matches salon “five pillars” with image, price, book CTA. */
-export function HomeMakeupServices() {
-  return (
-    <HomeCategoryServicesRow
-      kicker="Makeup services"
-      title="Signature looks for every celebration"
-      subtitle="Bridal, walima, and event artistry — priced clearly, booked in one step."
-      cards={homeMakeupCards}
-      viewAllHref="/services/makeup"
-      viewAllLabel="Makeup menu"
-      sectionIndex="01"
-    />
-  );
-}
 
 export function HomeServices() {
   return (
@@ -111,23 +86,18 @@ export function HomeAbout() {
   return <HomeAboutSection />;
 }
 
-export function HomeWhy() {
-  const reasons = [
-    { title: "Doorstep luxury", desc: "Full salon setup at your home — no salon visit needed." },
-    { title: "Bridal specialists", desc: "Makeup, mehndi & hair artists for your full wedding journey." },
-    { title: "Honest pricing", desc: "Clear rates on every service — no hidden charges at arrival." },
-  ];
+export function HomeWhy({ section }: { section: CmsHomePage["why"] }) {
   return (
     <HomeSection tone="gold-mist">
       <HomeSectionHeader
-        kicker="Why us"
-        title="The Huma promise"
-        subtitle="Three reasons families across Jhelum, Dina & Gujrat choose us for every celebration."
-        index="08"
+        kicker={section.kicker}
+        title={section.title}
+        subtitle={section.subtitle}
+        index={section.sectionIndex}
       />
       <div className="grid gap-5 sm:gap-6 md:grid-cols-3">
-        {reasons.map((r, idx) => (
-          <Reveal key={r.title} delay={idx * 0.1} scale>
+        {section.cards.map((r, idx) => (
+          <Reveal key={r.id} delay={idx * 0.1} scale>
             <div className="home-why-card">
               <span className="home-why-card__num" aria-hidden>
                 {String(idx + 1).padStart(2, "0")}
@@ -142,20 +112,20 @@ export function HomeWhy() {
   );
 }
 
-export function HomeSteps() {
+export function HomeSteps({ section }: { section: CmsHomePage["steps"] }) {
   return (
     <HomeSection tone="velvet">
       <HomeSectionHeader
-        kicker="Process"
-        title="Your journey"
-        subtitle="From first message to final touch-up — a calm, clear booking flow at your home."
-        index="10"
+        kicker={section.kicker}
+        title={section.title}
+        subtitle={section.subtitle}
+        index={section.sectionIndex}
       />
       <div className="home-steps-grid">
-        {steps.map((s, idx) => (
-          <Reveal key={s.n} delay={idx * 0.08}>
+        {section.items.map((s, idx) => (
+          <Reveal key={s.id} delay={idx * 0.08}>
             <div className="home-step-card">
-              <span className="home-step-card__badge">{s.n}</span>
+              <span className="home-step-card__badge">{s.number}</span>
               <h3 className="font-display text-lg font-bold text-white">{s.title}</h3>
               <p className="mt-3 text-sm leading-relaxed text-white/70">{s.desc}</p>
             </div>
@@ -246,72 +216,58 @@ export function HomeOffers() {
   );
 }
 
-export function HomeTestimonials() {
+export function HomeTestimonials({ section }: { section: CmsHomePage["testimonials"] }) {
   return (
-    <HomeSection tone="midnight">
+    <HomeSection tone="midnight" className="home-testimonials-section">
       <HomeSectionHeader
-        kicker="Testimonials"
-        title="Loved by our clients"
-        subtitle="Brides, party guests, and families who booked us at home."
-        index="13"
+        kicker={section.kicker}
+        title={section.title}
+        subtitle={section.subtitle}
+        index={section.sectionIndex}
       />
-      <div className="mx-auto max-w-3xl">
-        <TestimonialSlider />
-      </div>
+      <TestimonialSlider items={section.items} />
     </HomeSection>
   );
 }
 
-export function HomeCta() {
-  const trustPoints = [
-    "Certified staff",
-    "Hygiene protocol",
-    "Premium products",
-    "On-time slots",
-  ] as const;
-  const proof = [
-    { name: "Areeba K.", event: "Bridal", line: "Makeup stayed flawless for 12+ hours." },
-    { name: "Hina M.", event: "Party", line: "Quick service, polished look, right on time." },
-  ] as const;
-
+export function HomeCta({ cta }: { cta: CmsHomeCta }) {
   return (
-    <HomeSection tone="gold-mist">
-      <Reveal>
-        <div className="home-cta-trust mx-auto max-w-5xl">
-          {trustPoints.map((point) => (
-            <div key={point} className="home-cta-trust__pill">
-              {point}
+    <HomeSection tone="gold-mist" className="home-cta-section">
+      <div className="home-cta-stack mx-auto max-w-2xl">
+        <Reveal>
+          <div className="home-cta-trust">
+            {cta.trustPoints.map((point) => (
+              <div key={point} className="home-cta-trust__pill">
+                {point}
+              </div>
+            ))}
+          </div>
+        </Reveal>
+        {cta.proofCards.length > 0 ? (
+          <Reveal>
+            <div className="home-cta-proof grid gap-3 sm:grid-cols-2">
+              {cta.proofCards.map((p) => (
+                <div key={p.id} className="home-cta-proof-card">
+                  <p className="text-sm leading-relaxed text-white/85">{p.line}</p>
+                  <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-gold">
+                    {p.name} · {p.event}
+                  </p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </Reveal>
-      <Reveal>
-        <div className="mx-auto mt-8 grid max-w-5xl gap-4 sm:mt-10 sm:grid-cols-2">
-          {proof.map((p) => (
-            <div key={p.name} className="home-why-card">
-              <p className="text-sm leading-relaxed text-white/85">{p.line}</p>
-              <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-gold">
-                {p.name} · {p.event}
-              </p>
-            </div>
-          ))}
-        </div>
-      </Reveal>
-      <Reveal scale>
-        <div className="home-cta-finale mx-auto mt-10 max-w-5xl sm:mt-12">
-          <div className="home-cta-finale__ornament" aria-hidden />
-          <h2 className="text-headline-lg">Book your appointment now</h2>
-          <p className="mx-auto mt-6 max-w-md text-body-default leading-relaxed text-white/75">
-            Tell us your preferred date — we will confirm within 48 hours.
-          </p>
-          <Link
-            href="/book"
-            className="btn-gold-premium mt-10 inline-flex px-14 py-4 text-xs hover-scale-up"
-          >
-            Schedule visit
-          </Link>
-        </div>
-      </Reveal>
+          </Reveal>
+        ) : null}
+        <Reveal scale>
+          <div className="home-cta-finale">
+            <div className="home-cta-finale__ornament" aria-hidden />
+            <h2 className="home-cta-finale__title">{cta.title}</h2>
+            <p className="home-cta-finale__subtitle">{cta.subtitle}</p>
+            <Link href={cta.buttonHref} className="home-cta-finale__btn btn-gold-premium hover-scale-up">
+              {cta.buttonLabel}
+            </Link>
+          </div>
+        </Reveal>
+      </div>
     </HomeSection>
   );
 }

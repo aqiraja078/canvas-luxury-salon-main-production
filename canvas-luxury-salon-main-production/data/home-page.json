@@ -1,0 +1,469 @@
+{
+  "hero": {
+    "imageUrl": "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1920&q=85",
+    "badgeText": "Doorstep luxury · Huma",
+    "kicker": "Premium beauty saloon Jhelum",
+    "titleLine1": "Saloon grade beauty,",
+    "titleLine2": "without leaving home",
+    "description": "More than a saloon  a complete beauty experience. From bridal glam to self-care rituals, we bring artistry, luxury, and confidence directly to your doorstep.",
+    "footnote": "Bridal · Mehndi · Hair · Skin · Nails _ one message away on WhatsApp",
+    "primaryBtnLabel": "Book appointment",
+    "primaryBtnHref": "/book",
+    "secondaryBtnLabel": "Explore services",
+    "secondaryBtnHref": "/services",
+    "trustItems": [
+      {
+        "value": "3 cities",
+        "label": "Jhelum · Dina · Gujrat",
+        "hint": "We travel to you"
+      },
+      {
+        "value": "8AM – 10PM",
+        "label": "Morning to evening",
+        "hint": "Flexible home slots"
+      },
+      {
+        "value": "Full setup",
+        "label": "Light · mirror · kit",
+        "hint": "Salon at your door"
+      },
+      {
+        "value": "48 hrs",
+        "label": "Booking confirmed",
+        "hint": "Clear quote upfront"
+      }
+    ]
+  },
+  "makeup": {
+    "kicker": "Makeup services",
+    "title": "Signature looks for every celebration",
+    "subtitle": "Bridal, walima, and event artistry  priced clearly, booked in one step.",
+    "viewAllHref": "/services/makeup",
+    "viewAllLabel": "Makeup menu",
+    "sectionIndex": "01",
+    "variant": "default",
+    "cards": [
+      {
+        "id": "bridal-barat",
+        "name": "Bridal Makeup Barat",
+        "price": "From Rs. 30,000",
+        "image": "https://i.pinimg.com/1200x/68/64/65/68646592ddaac1f191d4100112a100e5.jpg",
+        "active": true,
+        "sortOrder": 0
+      },
+      {
+        "id": "bridal-walima",
+        "name": "Bridal Makeup Walima",
+        "price": "From Rs. 25,000",
+        "image": "https://i.pinimg.com/736x/ae/98/b3/ae98b360d36f7de2f3779737997f291a.jpg",
+        "active": true,
+        "sortOrder": 1
+      },
+      {
+        "id": "nikkah-engagement",
+        "name": "Nikkah & Engagement Makeup",
+        "price": "From Rs. 20,000",
+        "image": "https://i.pinimg.com/736x/b8/21/e7/b821e7e61a24e9f629029d037437bd37.jpg",
+        "active": true,
+        "sortOrder": 2
+      },
+      {
+        "id": "party",
+        "name": "Party Makeup",
+        "price": "From Rs. 7,000",
+        "image": "https://i.pinimg.com/736x/ad/3c/57/ad3c5725b10916fc21efc5d54f411654.jpg",
+        "active": true,
+        "sortOrder": 3
+      },
+      {
+        "id": "mehndi-makeup",
+        "name": "Mehndi Makeup",
+        "price": "From Rs. 15,000",
+        "image": "https://i.pinimg.com/1200x/c9/b1/1b/c9b11bbc7661272bc5f82134fc037e09.jpg",
+        "active": true,
+        "sortOrder": 4
+      }
+    ]
+  },
+  "offers": {
+    "kicker": "Limited offers",
+    "title": "Packages & special deals",
+    "subtitle": "Active offers from Huma Beauty Saloon — swipe through our best home-service packages.",
+    "sectionIndex": "02"
+  },
+  "hair": {
+    "kicker": "Hair services",
+    "title": "Cuts, colour & bridal styling",
+    "subtitle": "Precision cuts, rich colour, keratin care, and event-ready hairstyles — at your doorstep.",
+    "viewAllHref": "/services/hair",
+    "viewAllLabel": "Hair menu",
+    "sectionIndex": "04",
+    "variant": "default",
+    "cards": [
+      {
+        "id": "layer-cut",
+        "name": "Layer Cut",
+        "price": "From Rs. 2,000",
+        "image": "/api/media/6400ff6e-eb72-47d0-8bf8-1299b6e81ab5.jpg",
+        "active": true,
+        "sortOrder": 0
+      },
+      {
+        "id": "balayage",
+        "name": "Balayage",
+        "price": "From Rs. 8,000",
+        "image": "/api/media/89fbc528-dc22-4e90-830e-310c7c64515a.jpg",
+        "active": true,
+        "sortOrder": 1
+      },
+      {
+        "id": "keratin",
+        "name": "Keratin Treatment",
+        "price": "From Rs. 8,000",
+        "image": "/api/media/d7587aed-4502-4451-96dd-d952b6455d4d.jpg",
+        "active": true,
+        "sortOrder": 2
+      },
+      {
+        "id": "bridal-hair",
+        "name": "Bridal Hairstyle",
+        "price": "From Rs. 6,000",
+        "image": "/api/media/c553779b-c833-447b-ad26-368662639572.jpg",
+        "active": true,
+        "sortOrder": 3
+      },
+      {
+        "id": "hair-spa",
+        "name": "Hair Spa",
+        "price": "From Rs. 3,500",
+        "image": "/api/media/688bbea6-b81b-412f-89aa-03f36a02513e.jpg",
+        "active": true,
+        "sortOrder": 4
+      }
+    ]
+  },
+  "facial": {
+    "kicker": "Facial services",
+    "title": "Glow, brighten & bridal skin prep",
+    "subtitle": "From everyday glow to pre-bridal facials — customised for your skin and Punjab climate.",
+    "viewAllHref": "/services/facial",
+    "viewAllLabel": "Facial menu",
+    "sectionIndex": "05",
+    "variant": "alt",
+    "cards": [
+      {
+        "id": "glow-facial",
+        "name": "Glow Facial",
+        "price": "Rs. 4,200",
+        "image": "/api/media/64e95133-8928-4e2e-b732-a092390f477c.jpg",
+        "active": true,
+        "sortOrder": 0
+      },
+      {
+        "id": "whitening-facial",
+        "name": "Whitening Facial",
+        "price": "Rs. 3,800",
+        "image": "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&q=85",
+        "active": true,
+        "sortOrder": 1
+      },
+      {
+        "id": "bridal-glow",
+        "name": "Bridal Glow Facial",
+        "price": "Rs. 7,200",
+        "image": "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=800&q=85",
+        "active": true,
+        "sortOrder": 2
+      },
+      {
+        "id": "hydra-facial",
+        "name": "Hydra Facial",
+        "price": "Rs. 5,500",
+        "image": "/api/media/bd6d702a-8768-4290-9b8e-a2b8c8737489.jpg",
+        "active": true,
+        "sortOrder": 3
+      },
+      {
+        "id": "gold-facial",
+        "name": "Gold Facial",
+        "price": "Rs. 3,200",
+        "image": "/api/media/b1e08932-04db-42c0-9d3a-29d3b2d11feb.jpg",
+        "active": true,
+        "sortOrder": 4
+      }
+    ]
+  },
+  "nails": {
+    "kicker": "Nail services",
+    "title": "Mani, pedi & nail art",
+    "subtitle": "Gel polish, classic mani pedi, bridal nail art, and extensions salon finish nails at home.",
+    "viewAllHref": "/services/nails",
+    "viewAllLabel": "Nails menu",
+    "sectionIndex": "06",
+    "variant": "default",
+    "cards": [
+      {
+        "id": "gel-manicure",
+        "name": "Gel Manicure",
+        "price": "Rs. 2,500",
+        "image": "/api/media/e8ae554f-b215-4c93-9800-955aa580db4b.jpg",
+        "active": true,
+        "sortOrder": 0
+      },
+      {
+        "id": "classic-pedicure",
+        "name": "Classic Pedicure",
+        "price": "Rs. 1,900",
+        "image": "/api/media/069f806b-16be-4b61-ac7f-cf71da4b2e3a.jpg",
+        "active": true,
+        "sortOrder": 1
+      },
+      {
+        "id": "bridal-nail-art",
+        "name": "Bridal Nail Art",
+        "price": "Rs. 3,000",
+        "image": "/api/media/10dfbf4a-d11b-4fad-8f99-c099a08fadbb.jpg",
+        "active": true,
+        "sortOrder": 2
+      },
+      {
+        "id": "acrylic-extensions",
+        "name": "Acrylic Extensions",
+        "price": "Rs. 3,200",
+        "image": "/api/media/68821f76-e44e-4ba0-a818-49eb362bf642.jpg",
+        "active": true,
+        "sortOrder": 3
+      },
+      {
+        "id": "french-manicure",
+        "name": "French Manicure",
+        "price": "Rs. 1,600",
+        "image": "/api/media/78bf7a81-fc0e-4128-8e18-9bcf93878834.jpg",
+        "active": true,
+        "sortOrder": 4
+      }
+    ]
+  },
+  "waxing": {
+    "kicker": "Waxing services",
+    "title": "Smooth, hygienic body waxing",
+    "subtitle": "Full or partial waxing with gentle prep and aftercare — silky skin without leaving home.",
+    "viewAllHref": "/services/body-spa",
+    "viewAllLabel": "Wax menu",
+    "sectionIndex": "06",
+    "variant": "default",
+    "cards": [
+      {
+        "id": "body-wax-full-half",
+        "name": "Upper Lip",
+        "price": "Rs. 300",
+        "image": "/api/media/7e3517d9-c56f-4d4b-acb6-cdfb7e2a9de9.jpg",
+        "active": true,
+        "sortOrder": 0
+      },
+      {
+        "id": "body-waxing",
+        "name": "Full Legs",
+        "price": "Rs. 2,000",
+        "image": "/api/media/bae184ba-cd1c-41d5-bc20-c8194bb4370f.jpg",
+        "active": true,
+        "sortOrder": 1
+      },
+      {
+        "id": "body-bleach",
+        "name": "Full Arms",
+        "price": "Rs. 1,500",
+        "image": "/api/media/d1809b5d-fbb7-46be-bc64-810d2a639e0a.jpg",
+        "active": true,
+        "sortOrder": 2
+      },
+      {
+        "id": "tan-removal",
+        "name": "Eyebrow Shaping",
+        "price": "Rs. 200",
+        "image": "/api/media/476e2f31-c564-42d8-9c7d-878babb349e9.jpg",
+        "active": true,
+        "sortOrder": 3
+      },
+      {
+        "id": "back-facial",
+        "name": "Full body Bikini Wax",
+        "price": "Rs. 7,000",
+        "image": "/api/media/e144e992-17b2-4b93-a240-83a9d031732e.png",
+        "active": true,
+        "sortOrder": 4
+      }
+    ]
+  },
+  "mehndi": {
+    "kicker": "Mehndi services",
+    "title": "Bridal trails & festive henna",
+    "subtitle": "Arabic vines, dense bridal sets, and quick Eid motifs — rich paste, lasting stain.",
+    "viewAllHref": "/services/mehndi",
+    "viewAllLabel": "Mehndi menu",
+    "sectionIndex": "07",
+    "variant": "alt",
+    "cards": [
+      {
+        "id": "finger-mehndi",
+        "name": "Finger Mehndi",
+        "price": "Rs. 800",
+        "image": "/api/media/caa758fd-564e-448c-82dc-4969f31ed69e.jpg",
+        "active": true,
+        "sortOrder": 0
+      },
+      {
+        "id": "simple-front-hand",
+        "name": "Simple Mehndi (Front Hand)",
+        "price": "Rs. 1,200",
+        "image": "/api/media/5d567886-faa5-4302-b236-5dbc16c78bf4.jpg",
+        "active": true,
+        "sortOrder": 1
+      },
+      {
+        "id": "arabic-full-hand",
+        "name": "Arabic Mehndi (Full Hand)",
+        "price": "Rs. 3,500",
+        "image": "/api/media/81b18f60-1fee-4ce4-9f8c-e691d944dd97.jpg",
+        "active": true,
+        "sortOrder": 2
+      },
+      {
+        "id": "full-feet-mehndi",
+        "name": "Full Feet Mehndi",
+        "price": "Rs. 4,500",
+        "image": "/api/media/0ee1d84a-663b-4e38-83d9-85cb07dea34d.jpg",
+        "active": true,
+        "sortOrder": 3
+      },
+      {
+        "id": "bridal-full-package",
+        "name": "Full Hand + Full Feet Bridal",
+        "price": "Rs. 10,000",
+        "image": "/api/media/de6c29c5-39e7-471b-a1c8-f09565782690.jpg",
+        "active": true,
+        "sortOrder": 4
+      }
+    ]
+  },
+  "why": {
+    "kicker": "Why us",
+    "title": "The Huma promise",
+    "subtitle": "Three reasons families across Jhelum, Dina & Gujrat choose us for every celebration.",
+    "sectionIndex": "08",
+    "cards": [
+      {
+        "id": "why-1",
+        "title": "Doorstep luxury",
+        "desc": "Full salon setup at your home  no salon visit needed."
+      },
+      {
+        "id": "why-2",
+        "title": "Bridal specialists",
+        "desc": "Makeup, mehndi & hair artists for your full wedding journey."
+      },
+      {
+        "id": "why-3",
+        "title": "Honest pricing",
+        "desc": "Clear rates on every service — no hidden charges at arrival."
+      }
+    ]
+  },
+  "team": {
+    "kicker": "Our team",
+    "title": "Artists behind your glow",
+    "subtitle": "Certified makeup artists, mehndi specialists, and hair stylists  all home ready.",
+    "sectionIndex": "09"
+  },
+  "steps": {
+    "kicker": "Process",
+    "title": "Your journey",
+    "subtitle": "From first message to final touch-up a calm, clear booking flow at your home.",
+    "sectionIndex": "10",
+    "items": [
+      {
+        "id": "step-1",
+        "number": "01",
+        "title": "Book appointment",
+        "desc": "Share your date and preferred service."
+      },
+      {
+        "id": "step-2",
+        "number": "02",
+        "title": "Trial setup",
+        "desc": "Optional trial for bridal and special events."
+      },
+      {
+        "id": "step-3",
+        "number": "03",
+        "title": "Confirm booking",
+        "desc": "We confirm timing and personalize your plan."
+      },
+      {
+        "id": "step-4",
+        "number": "04",
+        "title": "Enjoy service",
+        "desc": "Relax — our artists take care of the rest."
+      }
+    ]
+  },
+  "testimonials": {
+    "kicker": "Testimonials",
+    "title": "Loved by our clients",
+    "subtitle": "Brides, party guests, and families who booked us at home.",
+    "sectionIndex": "13",
+    "items": [
+      {
+        "id": "t-1",
+        "quote": "The attention to detail was impeccable  a traditional yet modern bridal look that stayed flawless all day. I felt like royalty.",
+        "name": "Ayesha Malik",
+        "role": "Bridal client"
+      },
+      {
+        "id": "t-2",
+        "quote": "The colorist listened and delivered vibrant, healthy hair. The salon's expertise is unmatched I'm already planning my next visit.",
+        "name": "Fizza Khan",
+        "role": "Color & styling"
+      },
+      {
+        "id": "t-3",
+        "quote": "Professional, calm, and thorough. My skin was glowing after the facial truly a luxury experience from start to finish.",
+        "name": "Hura Kaleem",
+        "role": "Facial treatment"
+      },
+      {
+        "id": "t-4",
+        "quote": "Party makeup that lasted all night with a lightweight feel. Compliments everywhere  thank you for the confidence boost.",
+        "name": "Aeman Khan",
+        "role": "Event makeup"
+      }
+    ]
+  },
+  "cta": {
+    "trustPoints": [
+      "Certified staff",
+      "Hygiene protocol",
+      "Premium products",
+      "On-time slots"
+    ],
+    "proofCards": [
+      {
+        "id": "proof-1",
+        "name": "Areeba K.",
+        "event": "Bridal",
+        "line": "Makeup stayed flawless for 12+ hours."
+      },
+      {
+        "id": "proof-2",
+        "name": "Hina M.",
+        "event": "Party",
+        "line": "Quick service, polished look, right on time."
+      }
+    ],
+    "title": "Book your appointment now",
+    "subtitle": "Tell us your preferred date  we will confirm within 48 hours.",
+    "buttonLabel": "Schedule visit",
+    "buttonHref": "/book"
+  },
+  "updatedAt": "2026-06-20T11:48:18.136Z"
+}

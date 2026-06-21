@@ -43,7 +43,7 @@ export function HomeWaxingServices() {
       subtitle="Full or partial waxing with gentle prep and aftercare — silky skin without leaving home."
       cards={homeWaxingCards}
       viewAllHref="/services/body-spa"
-      viewAllLabel="Body & spa menu"
+      viewAllLabel="Wax menu"
       sectionIndex="06"
     />
   );

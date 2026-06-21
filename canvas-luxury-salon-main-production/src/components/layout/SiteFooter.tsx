@@ -111,10 +111,6 @@ export function SiteFooter() {
 
       <div className="border-t border-white/5 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] text-center text-[11px] text-white/40 sm:py-4 sm:text-xs">
         © {year} {site.name}. All rights reserved.
-        <span className="mx-2 text-white/20">·</span>
-        <Link href="/admin/login" className="hover:text-white/60">
-          Staff
-        </Link>
       </div>
     </footer>
   );

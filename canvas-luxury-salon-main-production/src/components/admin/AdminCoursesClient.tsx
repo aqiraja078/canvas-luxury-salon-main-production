@@ -27,16 +27,32 @@ const emptyForm = {
   sortOrder: 0,
 };
 
-export function AdminCoursesClient({ initial }: { initial: CmsCourse[] }) {
+export function AdminCoursesClient({
+  initial,
+  sessionUser,
+}: {
+  initial: CmsCourse[];
+  sessionUser: import("@/lib/admin-session-user").AdminSessionUser | null;
+}) {
   const [rows, setRows] = useState(initial);
   const [editing, setEditing] = useState<CmsCourse | null>(null);
+  const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
 
+  function closeForm() {
+    setShowForm(false);
+    setEditing(null);
+    setForm(emptyForm);
+    setMsg("");
+  }
+
   function openCreate() {
     setEditing(null);
     setForm(emptyForm);
+    setMsg("");
+    setShowForm(true);
   }
 
   function openEdit(c: CmsCourse) {
@@ -57,6 +73,8 @@ export function AdminCoursesClient({ initial }: { initial: CmsCourse[] }) {
       active: c.active,
       sortOrder: c.sortOrder,
     });
+    setMsg("");
+    setShowForm(true);
   }
 
   async function onImage(file: File | null) {
@@ -103,8 +121,7 @@ export function AdminCoursesClient({ initial }: { initial: CmsCourse[] }) {
       } else {
         setRows((prev) => [...prev, data]);
       }
-      openCreate();
-      setMsg("Saved.");
+      closeForm();
     } catch (e) {
       setMsg(e instanceof Error ? e.message : "Save failed");
     } finally {
@@ -124,6 +141,7 @@ export function AdminCoursesClient({ initial }: { initial: CmsCourse[] }) {
 
   return (
     <AdminShell
+      sessionUser={sessionUser}
       title="Courses"
       subtitle="Manage academy courses — they appear on /courses. Students apply without online payment."
     >
@@ -143,8 +161,20 @@ export function AdminCoursesClient({ initial }: { initial: CmsCourse[] }) {
         </a>
       </div>
 
-      <div className="mt-8 grid gap-8 xl:grid-cols-[1fr_400px]">
-        <div className="grid gap-4 sm:grid-cols-2">
+      <div className={`mt-8 grid gap-8 ${showForm ? "xl:grid-cols-[1fr_400px]" : ""}`}>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {rows.length === 0 && !showForm ? (
+            <p className="col-span-full text-white/50">
+              Abhi koi course nahi.{" "}
+              <button
+                type="button"
+                onClick={openCreate}
+                className="text-gold hover:underline"
+              >
+                Pehla course add karein
+              </button>
+            </p>
+          ) : null}
           {rows.map((c) => (
             <div
               key={c.id}
@@ -190,8 +220,19 @@ export function AdminCoursesClient({ initial }: { initial: CmsCourse[] }) {
           ))}
         </div>
 
+        {showForm ? (
         <div className={`${adminCardClass} h-fit p-5 lg:sticky lg:top-28`}>
-          <h2 className="font-display text-xl">{editing ? "Edit course" : "New course"}</h2>
+          <div className="flex items-start justify-between gap-3">
+            <h2 className="font-display text-xl">{editing ? "Edit course" : "New course"}</h2>
+            <button
+              type="button"
+              onClick={closeForm}
+              className="rounded-lg border border-white/10 px-2.5 py-1 text-[10px] uppercase tracking-wider text-white/50 transition hover:border-white/20 hover:text-white"
+              aria-label="Close form"
+            >
+              ✕
+            </button>
+          </div>
           <div className="mt-5 max-h-[70vh] space-y-4 overflow-y-auto pr-1">
             <AdminField label="Title">
               <input
@@ -308,16 +349,27 @@ export function AdminCoursesClient({ initial }: { initial: CmsCourse[] }) {
               Active (visible on site)
             </label>
             {msg ? <p className="text-sm text-gold">{msg}</p> : null}
-            <button
-              type="button"
-              disabled={busy}
-              onClick={save}
-              className="w-full rounded-full bg-white py-3 text-xs font-semibold uppercase tracking-wider text-black"
-            >
-              Save course
-            </button>
+            <div className="flex flex-col gap-2 pt-1">
+              <button
+                type="button"
+                disabled={busy}
+                onClick={save}
+                className="w-full rounded-full bg-white py-3 text-xs font-semibold uppercase tracking-wider text-black disabled:opacity-50"
+              >
+                Save course
+              </button>
+              <button
+                type="button"
+                onClick={closeForm}
+                disabled={busy}
+                className="w-full rounded-full border border-white/10 py-3 text-xs font-semibold uppercase tracking-wider text-white/60 transition hover:border-white/20 hover:text-white disabled:opacity-50"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
+        ) : null}
       </div>
     </AdminShell>
   );

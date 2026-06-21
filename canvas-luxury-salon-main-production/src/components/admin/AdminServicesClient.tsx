@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import type { CmsService, ServiceCategorySlug } from "@/lib/cms-types";
+import { WAX_SECTION_IDS } from "@/lib/waxing-services-data";
 import {
   AdminField,
   AdminShell,
@@ -14,7 +15,7 @@ const CATEGORIES: { slug: ServiceCategorySlug; label: string }[] = [
   { slug: "hair", label: "Hair" },
   { slug: "makeup", label: "Makeup" },
   { slug: "facial", label: "Facial" },
-  { slug: "body-spa", label: "Body & Spa" },
+  { slug: "body-spa", label: "Wax" },
   { slug: "nails", label: "Nails" },
   { slug: "mehndi", label: "Mehndi" },
 ];
@@ -34,7 +35,13 @@ const emptyForm = {
   sortOrder: 0,
 };
 
-export function AdminServicesClient({ initial }: { initial: CmsService[] }) {
+export function AdminServicesClient({
+  initial,
+  sessionUser,
+}: {
+  initial: CmsService[];
+  sessionUser: import("@/lib/admin-session-user").AdminSessionUser | null;
+}) {
   const [rows, setRows] = useState(initial);
   const [filter, setFilter] = useState<"all" | ServiceCategorySlug>("all");
   const [editing, setEditing] = useState<CmsService | null>(null);
@@ -45,7 +52,15 @@ export function AdminServicesClient({ initial }: { initial: CmsService[] }) {
   const formRef = useRef<HTMLDivElement>(null);
 
   const filtered =
-    filter === "all" ? rows : rows.filter((r) => r.categorySlug === filter);
+    filter === "all"
+      ? rows
+      : rows.filter((r) => {
+          if (r.categorySlug !== filter) return false;
+          if (filter === "body-spa") {
+            return WAX_SECTION_IDS.has(r.sectionId);
+          }
+          return true;
+        });
 
   function scrollToForm() {
     requestAnimationFrame(() => {
@@ -155,6 +170,7 @@ export function AdminServicesClient({ initial }: { initial: CmsService[] }) {
 
   return (
     <AdminShell
+      sessionUser={sessionUser}
       title="Services"
       subtitle="Add, edit, or hide services. Cards on the website show name, price & description — no images on service pages."
     >

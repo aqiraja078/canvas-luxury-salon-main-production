@@ -26,7 +26,13 @@ const emptyForm = {
   sortOrder: 0,
 };
 
-export function AdminOffersClient({ initial }: { initial: CmsOffer[] }) {
+export function AdminOffersClient({
+  initial,
+  sessionUser,
+}: {
+  initial: CmsOffer[];
+  sessionUser: import("@/lib/admin-session-user").AdminSessionUser | null;
+}) {
   const [rows, setRows] = useState(initial);
   const [editing, setEditing] = useState<CmsOffer | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -143,6 +149,7 @@ export function AdminOffersClient({ initial }: { initial: CmsOffer[] }) {
 
   return (
     <AdminShell
+      sessionUser={sessionUser}
       title="Offers"
       subtitle="Create seasonal deals and packages — they appear on /offers and the homepage banner."
     >

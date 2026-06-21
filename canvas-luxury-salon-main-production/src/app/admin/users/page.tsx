@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { adminCookieName, parseSessionToken } from "@/lib/admin-session";
+import { toAdminSessionUser } from "@/lib/admin-session-user";
 import { hasPermission } from "@/lib/cms-types";
 import { getAdminUsers, sanitizeAdminUser } from "@/lib/users-store";
 import { AdminUsersClient } from "@/components/admin/AdminUsersClient";
@@ -18,5 +19,10 @@ export default async function AdminUsersPage() {
   if (!hasPermission(session.role, "users.manage")) redirect("/admin");
 
   const users = (await getAdminUsers()).map(sanitizeAdminUser);
-  return <AdminUsersClient initial={users} />;
+  return (
+    <AdminUsersClient
+      initial={users}
+      sessionUser={toAdminSessionUser(session)}
+    />
+  );
 }

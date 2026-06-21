@@ -1,10 +1,19 @@
 import { NextResponse } from "next/server";
-import { requirePermission } from "@/lib/admin-auth";
+import { requireAdminSession } from "@/lib/admin-auth";
+import { hasPermission } from "@/lib/cms-types";
 import { saveUploadedImage } from "@/lib/media-store";
 
 export async function POST(request: Request) {
   try {
-    await requirePermission("services.manage");
+    const session = await requireAdminSession();
+    const canUpload =
+      hasPermission(session.role, "services.manage") ||
+      hasPermission(session.role, "home.manage") ||
+      hasPermission(session.role, "offers.manage") ||
+      hasPermission(session.role, "team.manage") ||
+      hasPermission(session.role, "courses.manage");
+    if (!canUpload) throw new Error("Forbidden");
+
     const form = await request.formData();
     const file = form.get("file");
     if (!(file instanceof File)) {

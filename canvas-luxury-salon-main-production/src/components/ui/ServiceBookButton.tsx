@@ -2,6 +2,7 @@ import Link from "next/link";
 
 type Props = {
   serviceName: string;
+  bookHref?: string;
   variant?: "outline" | "gold";
   className?: string;
 };
@@ -9,6 +10,7 @@ type Props = {
 /** Consistent book CTA used on all service cards site-wide. */
 export function ServiceBookButton({
   serviceName,
+  bookHref,
   variant = "outline",
   className = "",
 }: Props) {
@@ -18,7 +20,9 @@ export function ServiceBookButton({
 
   return (
     <Link
-      href={`/book?service=${encodeURIComponent(serviceName)}`}
+      href={
+        bookHref ?? `/book?service=${encodeURIComponent(serviceName)}`
+      }
       className={`${base} ${variantClass} ${className}`.trim()}
     >
       BOOK NOW

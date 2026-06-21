@@ -22,7 +22,13 @@ const emptyForm = {
   active: true,
 };
 
-export function AdminTeamClient({ initial }: { initial: CmsTeamMember[] }) {
+export function AdminTeamClient({
+  initial,
+  sessionUser,
+}: {
+  initial: CmsTeamMember[];
+  sessionUser: import("@/lib/admin-session-user").AdminSessionUser | null;
+}) {
   const [rows, setRows] = useState(initial);
   const [editing, setEditing] = useState<CmsTeamMember | null>(null);
   const [form, setForm] = useState(emptyForm);
@@ -110,6 +116,7 @@ export function AdminTeamClient({ initial }: { initial: CmsTeamMember[] }) {
 
   return (
     <AdminShell
+      sessionUser={sessionUser}
       title="Team"
       subtitle="Manage team members shown on the homepage — photo, bio, and specialties."
     >
@@ -117,10 +124,10 @@ export function AdminTeamClient({ initial }: { initial: CmsTeamMember[] }) {
         + Add member
       </button>
 
-      <div className="mt-8 grid gap-8 xl:grid-cols-[1fr_380px]">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-8 grid items-start gap-8 xl:grid-cols-[1fr_380px]">
+        <div className="grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {rows.map((m) => (
-            <div key={m.id} className={`${adminCardClass} p-5 text-center`}>
+            <div key={m.id} className={`${adminCardClass} h-fit p-5 text-center`}>
               {m.imageUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={m.imageUrl} alt="" className="mx-auto h-28 w-28 rounded-full object-cover" />
