@@ -1,3 +1,5 @@
+import type { HairLengthPricing } from "@/lib/hair-services-data";
+
 export type ServiceCategorySlug =
   | "hair"
   | "facial"
@@ -17,6 +19,8 @@ export type CmsService = {
   name: string;
   description: string;
   price: string;
+  /** Short / medium / long prices (hair services only). */
+  lengthPricing?: HairLengthPricing;
   duration?: string;
   imageUrl?: string;
   featured: boolean;
@@ -71,6 +75,33 @@ export type CmsCourse = {
   updatedAt: string;
 };
 
+export type CmsBlogPost = {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  coverImage?: string;
+  author: string;
+  category: string;
+  tags: string[];
+  readTimeMinutes: number;
+  featured: boolean;
+  active: boolean;
+  publishedAt: string;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type CmsBlogPage = {
+  kicker: string;
+  title: string;
+  subtitle: string;
+  emptyMessage: string;
+  updatedAt: string;
+};
+
 export type CmsCourseApplication = {
   id: string;
   courseId: string;
@@ -92,15 +123,45 @@ export type CmsCourseApplication = {
   createdAt: string;
 };
 
+export type CmsTeamSkill = {
+  title: string;
+  description: string;
+};
+
+export type CmsTeamStat = {
+  id: string;
+  value: string;
+  label: string;
+};
+
+export type CmsTeamSection = {
+  kicker: string;
+  title: string;
+  subtitle: string;
+  sectionIndex: string;
+  emptyMessage: string;
+  homeMemberLimit: number;
+  aboutMemberLimit: number;
+  aboutHeadingTemplate: string;
+  aboutLeadTemplate: string;
+  defaultMemberImage: string;
+  stats: CmsTeamStat[];
+  updatedAt: string;
+};
+
 export type CmsTeamMember = {
   id: string;
   name: string;
   role: string;
   bio: string;
+  aboutText?: string;
   specialties: string[];
+  skills?: CmsTeamSkill[];
   experienceYears?: number;
   imageUrl?: string;
   instagram?: string;
+  facebook?: string;
+  phone?: string;
   sortOrder: number;
   active: boolean;
   createdAt: string;
@@ -327,6 +388,8 @@ export const ADMIN_PERMISSIONS = {
   "home.manage": ["owner"] as AdminRole[],
   "about.view": ["owner", "reception"] as AdminRole[],
   "about.manage": ["owner"] as AdminRole[],
+  "blog.view": ["owner", "reception"] as AdminRole[],
+  "blog.manage": ["owner"] as AdminRole[],
   "users.manage": ["owner"] as AdminRole[],
 } as const;
 

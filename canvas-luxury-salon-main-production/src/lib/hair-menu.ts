@@ -7,6 +7,9 @@ export function enrichHairMenuSections(
   return sections.map((section) => ({
     ...section,
     services: section.services.map((item) => {
+      if (item.lengthPricing && Object.keys(item.lengthPricing).length > 0) {
+        return item;
+      }
       const hair = findHairServiceByName(item.name);
       if (!hair) return item;
       return {

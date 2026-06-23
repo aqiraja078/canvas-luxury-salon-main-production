@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Playfair_Display, Poppins } from "next/font/google";
+import { Great_Vibes, Playfair_Display, Poppins } from "next/font/google";
 import "./globals.css";
 import { SiteChrome } from "@/components/layout/SiteChrome";
 import { SiteFooter } from "@/components/layout/SiteFooter";
@@ -22,6 +22,14 @@ const playfair = Playfair_Display({
   variable: "--font-playfair",
   display: "swap",
   adjustFontFallback: true,
+});
+
+const greatVibes = Great_Vibes({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-script",
+  display: "swap",
+  adjustFontFallback: false,
 });
 
 const metadataBase = getMetadataBase();
@@ -83,7 +91,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://i.pinimg.com" crossOrigin="" />
       </head>
       <body
-        className={`${poppins.variable} ${playfair.variable} grain min-h-screen overflow-x-clip bg-background antialiased selection:bg-gold/30 selection:text-white`}
+        className={`${poppins.variable} ${playfair.variable} ${greatVibes.variable} grain min-h-screen overflow-x-clip bg-background antialiased selection:bg-gold/30 selection:text-white`}
       >
         <JsonLd />
         <SiteChrome

@@ -4,28 +4,25 @@ import type { Metadata } from "next";
 import { adminCookieName, parseSessionToken } from "@/lib/admin-session";
 import { toAdminSessionUser } from "@/lib/admin-session-user";
 import { hasPermission } from "@/lib/cms-types";
-import { getTeamMembers, getTeamSection } from "@/lib/team-store";
-import { AdminTeamClient } from "@/components/admin/AdminTeamClient";
+import { getBlogPage, getBlogPosts } from "@/lib/blog-store";
+import { AdminBlogClient } from "@/components/admin/AdminBlogClient";
 
 export const metadata: Metadata = {
-  title: "Team — Admin",
+  title: "Blog — Admin",
   robots: { index: false, follow: false },
 };
 
-export default async function AdminTeamPage() {
+export default async function AdminBlogPage() {
   const jar = await cookies();
   const session = parseSessionToken(jar.get(adminCookieName)?.value);
   if (!session) redirect("/admin/login");
-  if (!hasPermission(session.role, "team.view")) redirect("/admin");
+  if (!hasPermission(session.role, "blog.view")) redirect("/admin");
 
-  const [members, section] = await Promise.all([
-    getTeamMembers(),
-    getTeamSection(),
-  ]);
+  const [posts, page] = await Promise.all([getBlogPosts(), getBlogPage()]);
   return (
-    <AdminTeamClient
-      initialMembers={members}
-      initialSection={section}
+    <AdminBlogClient
+      initialPosts={posts}
+      initialPage={page}
       sessionUser={toAdminSessionUser(session)}
     />
   );

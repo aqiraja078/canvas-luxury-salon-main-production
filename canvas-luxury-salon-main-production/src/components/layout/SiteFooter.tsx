@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { HumaLogo } from "@/components/brand/HumaLogo";
 import type { SiteNavLink } from "@/lib/navigation";
 import { site } from "@/lib/site";
 
@@ -18,10 +19,10 @@ export function SiteFooter({
     <footer className="border-t border-white/10 bg-black">
       <div className="mx-auto grid max-w-7xl grid-cols-2 gap-x-5 gap-y-6 px-4 py-6 sm:gap-x-6 sm:px-6 md:grid-cols-2 md:gap-y-8 md:px-8 md:py-8 lg:grid-cols-4 lg:gap-x-8">
         <div className="col-span-2 lg:col-span-1">
-          <p className="font-display text-lg tracking-wide text-gold sm:text-xl lg:text-2xl">
-            {site.name}
-          </p>
-          <p className="mt-2 max-w-xs text-sm leading-relaxed text-white/55 sm:mt-3">
+          <Link href="/" className="group inline-flex">
+            <HumaLogo variant="brand" size="lg" />
+          </Link>
+          <p className="mt-3 max-w-xs text-sm leading-relaxed text-white/55 sm:mt-4">
             {site.description}
           </p>
         </div>

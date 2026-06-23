@@ -61,6 +61,62 @@ export function buildHairDisplayPrice(pricing: HairLengthPricing): string {
   return `From ${formatHairRs(getHairMinPrice(pricing))}`;
 }
 
+export type HairLengthFormPrices = {
+  short: string;
+  medium: string;
+  long: string;
+};
+
+export const emptyHairLengthForm: HairLengthFormPrices = {
+  short: "",
+  medium: "",
+  long: "",
+};
+
+export function hairLengthFormFromPricing(
+  pricing?: HairLengthPricing
+): HairLengthFormPrices {
+  return {
+    short: pricing?.short != null ? String(pricing.short) : "",
+    medium: pricing?.medium != null ? String(pricing.medium) : "",
+    long: pricing?.long != null ? String(pricing.long) : "",
+  };
+}
+
+export function parseHairLengthPricing(
+  form: HairLengthFormPrices
+): HairLengthPricing | undefined {
+  const pricing: HairLengthPricing = {};
+  for (const key of ["short", "medium", "long"] as const) {
+    const raw = form[key].trim();
+    if (!raw) continue;
+    const amount = Number.parseInt(raw.replace(/\D/g, ""), 10);
+    if (amount > 0) pricing[key] = amount;
+  }
+  return Object.keys(pricing).length > 0 ? pricing : undefined;
+}
+
+export function formatHairLengthPricingSummary(
+  pricing?: HairLengthPricing
+): string | null {
+  if (!pricing || Object.keys(pricing).length === 0) return null;
+  const parts: string[] = [];
+  if (pricing.short != null) parts.push(`Short ${pricing.short.toLocaleString("en-PK")}`);
+  if (pricing.medium != null) parts.push(`Medium ${pricing.medium.toLocaleString("en-PK")}`);
+  if (pricing.long != null) parts.push(`Long ${pricing.long.toLocaleString("en-PK")}`);
+  return parts.join(" · ");
+}
+
+export function resolveHairServicePrice(
+  price: string,
+  lengthPricing?: HairLengthPricing
+): string {
+  if (lengthPricing && Object.keys(lengthPricing).length > 0) {
+    return buildHairDisplayPrice(lengthPricing);
+  }
+  return price.trim();
+}
+
 export function buildHairBookingServiceName(
   name: string,
   length: HairLength,
@@ -90,23 +146,41 @@ export function findHairServiceByName(name: string): HairServiceItem | undefined
   return undefined;
 }
 
-export function lookupHairBookingPriceLabel(service: string): string | null {
+export function resolveHairLengthPricing(
+  name: string,
+  cmsPricing?: HairLengthPricing
+): HairLengthPricing | undefined {
+  if (cmsPricing && Object.keys(cmsPricing).length > 0) return cmsPricing;
+  return findHairServiceByName(name)?.lengthPricing;
+}
+
+export function lookupHairBookingPriceLabel(
+  service: string,
+  pricingByName?: Map<string, HairLengthPricing>
+): string | null {
   const trimmed = service.trim();
   const bookingMatch = trimmed.match(/^(.+?) · (Short|Medium|Long) length · Rs\. [\d,]+$/);
   if (bookingMatch) {
     const [, serviceName, lengthLabel] = bookingMatch;
-    const hair = findHairServiceByName(serviceName.trim());
-    if (!hair) return null;
+    const name = serviceName.trim();
+    const pricing =
+      pricingByName?.get(name) ?? resolveHairLengthPricing(name);
+    if (!pricing) return null;
     const length = HAIR_LENGTH_ORDER.find(
       (l) => HAIR_LENGTH_LABELS[l] === lengthLabel
     );
     if (!length) return null;
-    const amount = hair.lengthPricing[length];
+    const amount = pricing[length];
     return amount != null ? formatHairRs(amount) : null;
   }
 
   const hair = findHairServiceByName(trimmed);
-  return hair ? hair.price : null;
+  if (hair) return hair.price;
+  const cmsPricing = pricingByName?.get(trimmed);
+  if (cmsPricing && Object.keys(cmsPricing).length > 0) {
+    return buildHairDisplayPrice(cmsPricing);
+  }
+  return null;
 }
 
 export const hairServiceSections: HairServiceSection[] = [

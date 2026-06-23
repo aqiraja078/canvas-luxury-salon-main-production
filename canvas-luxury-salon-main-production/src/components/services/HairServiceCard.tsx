@@ -9,6 +9,7 @@ import {
   HAIR_LENGTH_LABELS,
   type HairLength,
   buildHairBookingUrl,
+  formatHairRs,
   getAvailableHairLengths,
 } from "@/lib/hair-services-data";
 
@@ -31,7 +32,8 @@ export function HairServiceCard({ item, theme }: Props) {
   const activeLength = lengths.includes(length) ? length : lengths[0];
   const amount =
     activeLength != null ? pricing[activeLength] ?? null : null;
-  const displayPrice = item.price;
+  const displayPrice =
+    amount != null ? formatHairRs(amount) : item.price;
   const bookHref =
     amount != null && activeLength
       ? buildHairBookingUrl(item.name, activeLength, amount)

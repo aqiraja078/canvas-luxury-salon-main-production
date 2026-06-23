@@ -1,9 +1,17 @@
 import { randomUUID } from "crypto";
 import { unstable_noStore as noStore } from "next/cache";
 import { readCmsJson, writeCmsJson } from "@/lib/cms-store";
-import type { CmsTeamMember } from "@/lib/cms-types";
+import type { CmsTeamMember, CmsTeamSection } from "@/lib/cms-types";
+import { defaultTeamSection } from "@/lib/team-section-defaults";
 
 const KEY = "team";
+const SECTION_KEY = "team-section";
+
+async function ensureSectionSeeded() {
+  const existing = await readCmsJson<CmsTeamSection | null>(SECTION_KEY, null);
+  if (existing) return;
+  await writeCmsJson(SECTION_KEY, defaultTeamSection());
+}
 
 async function ensureSeeded() {
   const list = await readCmsJson<CmsTeamMember[] | null>(KEY, null);
@@ -30,9 +38,30 @@ async function ensureSeeded() {
 export async function getTeamMembers(): Promise<CmsTeamMember[]> {
   noStore();
   await ensureSeeded();
+  await ensureSectionSeeded();
   return (await readCmsJson<CmsTeamMember[]>(KEY, [])).sort(
     (a, b) => a.sortOrder - b.sortOrder
   );
+}
+
+export async function getTeamSection(): Promise<CmsTeamSection> {
+  noStore();
+  await ensureSectionSeeded();
+  return (await readCmsJson<CmsTeamSection>(SECTION_KEY, defaultTeamSection()));
+}
+
+export async function updateTeamSection(
+  patch: Partial<Omit<CmsTeamSection, "updatedAt">>
+): Promise<CmsTeamSection> {
+  const current = await getTeamSection();
+  const next: CmsTeamSection = {
+    ...current,
+    ...patch,
+    stats: patch.stats ?? current.stats,
+    updatedAt: new Date().toISOString(),
+  };
+  await writeCmsJson(SECTION_KEY, next);
+  return next;
 }
 
 export async function getActiveTeamMembers(): Promise<CmsTeamMember[]> {

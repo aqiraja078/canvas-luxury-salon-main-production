@@ -58,7 +58,7 @@ export function SiteHeader({
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 pt-[env(safe-area-inset-top)] sm:px-6 md:px-8">
         <Link href="/" className="group flex min-h-[44px] items-center">
-          <HumaLogo variant="full" size="sm" />
+          <HumaLogo variant="brand" size="md" />
         </Link>
 
         <nav className="hidden items-center gap-8 lg:flex">

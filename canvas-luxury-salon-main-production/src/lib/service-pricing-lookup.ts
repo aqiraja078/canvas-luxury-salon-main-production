@@ -1,12 +1,14 @@
 import { waxingServiceSections } from "@/lib/waxing-services-data";
 import { facialServiceSections } from "@/lib/facial-services-data";
 import {
+  type HairLengthPricing,
   hairServiceSections,
   lookupHairBookingPriceLabel,
 } from "@/lib/hair-services-data";
 import { makeupServiceSections } from "@/lib/makeup-services-data";
 import { mehndiServiceSections } from "@/lib/mehndi-services-data";
 import { nailsServiceSections } from "@/lib/nails-services-data";
+import type { CmsService } from "@/lib/cms-types";
 
 /** Older / generic booking dropdown labels → display price hint */
 const LEGACY_SERVICE_PRICES: Record<string, string> = {
@@ -60,9 +62,32 @@ function buildPriceMap(): Map<string, string> {
 
 const priceMap = buildPriceMap();
 
-export function lookupServicePriceLabel(service: string): string {
+export function buildHairPricingMap(
+  services: CmsService[]
+): Map<string, HairLengthPricing> {
+  const map = new Map<string, HairLengthPricing>();
+  for (const s of services) {
+    if (s.categorySlug === "hair" && s.lengthPricing) {
+      map.set(s.name, s.lengthPricing);
+    }
+  }
+  return map;
+}
+
+export function lookupServicePriceLabel(
+  service: string,
+  hairPricingByName?: Map<string, HairLengthPricing>
+): string {
   const key = service.trim();
-  const hairBookingPrice = lookupHairBookingPriceLabel(key);
+  const hairBookingPrice = lookupHairBookingPriceLabel(key, hairPricingByName);
   if (hairBookingPrice) return hairBookingPrice;
   return priceMap.get(key) ?? "See menu / consult";
+}
+
+export async function lookupServicePriceLabelFromStore(
+  service: string
+): Promise<string> {
+  const { getServices } = await import("@/lib/services-store");
+  const services = await getServices();
+  return lookupServicePriceLabel(service, buildHairPricingMap(services));
 }

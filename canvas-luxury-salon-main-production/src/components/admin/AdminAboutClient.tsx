@@ -725,31 +725,17 @@ export function AdminAboutClient({
         ) : null}
 
         {tab === "team" ? (
-          <div className="space-y-4">
-            <SectionMetaFields
-              value={page.team}
-              disabled={!canManage}
-              onChange={(meta) => setPage((p) => ({ ...p, team: { ...p.team, ...meta } }))}
-            />
-            <AdminField label="Max team members shown">
-              <input
-                type="number"
-                min={1}
-                max={10}
-                className={adminInputClass}
-                value={page.team.memberLimit}
-                disabled={!canManage}
-                onChange={(e) =>
-                  setPage((p) => ({
-                    ...p,
-                    team: { ...p.team, memberLimit: Number(e.target.value) || 3 },
-                  }))
-                }
-              />
-            </AdminField>
-            <p className="text-sm text-white/50">
-              Artist profiles, photos, and bios are edited on the Team admin page.
+          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-5 text-sm text-white/60">
+            <p>
+              The <strong className="text-gold">Our Team</strong> section is fully
+              managed in one place — headings, stats, limits, and artist profiles.
             </p>
+            <Link
+              href="/admin/team"
+              className="mt-4 inline-flex rounded-full bg-gold px-5 py-2 text-xs font-semibold uppercase tracking-wider text-black"
+            >
+              Open Team admin
+            </Link>
           </div>
         ) : null}
 

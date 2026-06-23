@@ -2,11 +2,8 @@
 
 import { useCallback, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import type { CmsTeamMember } from "@/lib/cms-types";
+import type { CmsTeamMember, CmsTeamSection } from "@/lib/cms-types";
 import { site } from "@/lib/site";
-
-const DEFAULT_IMAGE =
-  "https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=800&q=85";
 
 type SkillItem = {
   title: string;
@@ -46,6 +43,13 @@ const DEFAULT_SKILLS: SkillItem[] = SKILL_CATALOG.map(
 );
 
 function memberSkills(member: CmsTeamMember): SkillItem[] {
+  if (member.skills && member.skills.length > 0) {
+    return member.skills.slice(0, 4).map((skill) => ({
+      title: skill.title,
+      description: skill.description,
+      icon: SKILL_CATALOG.find((s) => s.match.test(skill.title))?.icon ?? "skin",
+    }));
+  }
   const picked: SkillItem[] = [];
   for (const spec of member.specialties) {
     const found = SKILL_CATALOG.find((s) => s.match.test(spec));
@@ -60,10 +64,17 @@ function memberSkills(member: CmsTeamMember): SkillItem[] {
   return picked.slice(0, 4);
 }
 
-function aboutDetail(member: CmsTeamMember): string {
+function aboutDetail(member: CmsTeamMember, section: CmsTeamSection): string {
+  if (member.aboutText?.trim()) return member.aboutText.trim();
   const years = member.experienceYears ?? 6;
-  const lead = `With over ${years}+ years of professional beauty expertise, ${member.name} brings artistry and attention to detail to every bridal and special occasion look.`;
+  const lead = section.aboutLeadTemplate
+    .replaceAll("{years}", String(years))
+    .replaceAll("{name}", member.name);
   return member.bio.length > 140 ? member.bio : `${lead} ${member.bio}`;
+}
+
+function aboutHeading(member: CmsTeamMember, section: CmsTeamSection): string {
+  return section.aboutHeadingTemplate.replaceAll("{name}", member.name);
 }
 
 function SkillIcon({ type }: { type: SkillItem["icon"] }) {
@@ -160,25 +171,43 @@ function SocialIcon({ type }: { type: "instagram" | "facebook" | "phone" }) {
   );
 }
 
-function memberImageSrc(member: CmsTeamMember): string {
-  if (!member.imageUrl?.trim()) return DEFAULT_IMAGE;
+function memberImageSrc(member: CmsTeamMember, section: CmsTeamSection): string {
+  if (!member.imageUrl?.trim()) return section.defaultMemberImage;
   const base = member.imageUrl.trim();
   const version = encodeURIComponent(member.updatedAt || member.id);
   return base.includes("?") ? `${base}&v=${version}` : `${base}?v=${version}`;
 }
 
-function MemberImage({ member }: { member: CmsTeamMember }) {
+function MemberImage({
+  member,
+  section,
+}: {
+  member: CmsTeamMember;
+  section: CmsTeamSection;
+}) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={memberImageSrc(member)}
+      src={memberImageSrc(member, section)}
       alt={member.name}
       className="absolute inset-0 h-full w-full object-cover object-top"
     />
   );
 }
 
-export function TeamArtistsCarousel({ members }: { members: CmsTeamMember[] }) {
+const STAT_ICONS = ["star", "clients", "heart", "location"] as const;
+
+function resolveStatValue(template: string, years: number): string {
+  return template.replaceAll("{years}", String(years));
+}
+
+export function TeamArtistsCarousel({
+  members,
+  section,
+}: {
+  members: CmsTeamMember[];
+  section: CmsTeamSection;
+}) {
   const reduce = useReducedMotion();
   const [index, setIndex] = useState(0);
   const count = members.length;
@@ -196,12 +225,11 @@ export function TeamArtistsCarousel({ members }: { members: CmsTeamMember[] }) {
 
   const skills = memberSkills(member);
   const years = member.experienceYears ?? 6;
-  const stats = [
-    { value: `${years}+`, label: "Years Experience", icon: "star" as const },
-    { value: "500+", label: "Happy Clients", icon: "clients" as const },
-    { value: "100%", label: "Client Satisfaction", icon: "heart" as const },
-    { value: String(site.serviceAreas.length), label: "Cities Served", icon: "location" as const },
-  ];
+  const stats = section.stats.map((stat, idx) => ({
+    value: resolveStatValue(stat.value, years),
+    label: stat.label,
+    icon: STAT_ICONS[idx % STAT_ICONS.length],
+  }));
 
   const slideKey = member.id;
   const slideAnim = reduce
@@ -219,7 +247,7 @@ export function TeamArtistsCarousel({ members }: { members: CmsTeamMember[] }) {
         <div className="team-artists-profile__media">
           <AnimatePresence mode="wait">
             <motion.div key={slideKey} className="team-artists-profile__media-inner" {...slideAnim}>
-              <MemberImage member={member} />
+              <MemberImage member={member} section={section} />
             </motion.div>
           </AnimatePresence>
 
@@ -268,19 +296,37 @@ export function TeamArtistsCarousel({ members }: { members: CmsTeamMember[] }) {
                   <SocialIcon type="instagram" />
                 </a>
               ) : null}
+              {member.facebook ? (
+                <a
+                  href={member.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="team-artists-social__link"
+                  aria-label={`${member.name} on Facebook`}
+                >
+                  <SocialIcon type="facebook" />
+                </a>
+              ) : (
+                <a
+                  href={site.social.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="team-artists-social__link"
+                  aria-label="Facebook"
+                >
+                  <SocialIcon type="facebook" />
+                </a>
+              )}
               <a
-                href={site.social.facebook}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={
+                  member.phone
+                    ? member.phone.startsWith("tel:")
+                      ? member.phone
+                      : `tel:${member.phone.replace(/\D/g, "")}`
+                    : `tel:+${site.phoneDigits}`
+                }
                 className="team-artists-social__link"
-                aria-label="Facebook"
-              >
-                <SocialIcon type="facebook" />
-              </a>
-              <a
-                href={`tel:+${site.phoneDigits}`}
-                className="team-artists-social__link"
-                aria-label="Call us"
+                aria-label="Call"
               >
                 <SocialIcon type="phone" />
               </a>
@@ -293,9 +339,13 @@ export function TeamArtistsCarousel({ members }: { members: CmsTeamMember[] }) {
         <AnimatePresence mode="wait">
           <motion.div key={slideKey} className="team-artists-detail__inner" {...slideAnim}>
             <div className="team-artists-detail__about">
-              <h3 className="team-artists-detail__heading">About {member.name}</h3>
+              <h3 className="team-artists-detail__heading">
+                {aboutHeading(member, section)}
+              </h3>
               <div className="team-artists-detail__rule" aria-hidden />
-              <p className="team-artists-detail__text">{aboutDetail(member)}</p>
+              <p className="team-artists-detail__text">
+                {aboutDetail(member, section)}
+              </p>
             </div>
 
             <div className="team-artists-skills">

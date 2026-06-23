@@ -8,6 +8,14 @@ import {
 } from "@/lib/service-category-sections";
 import { WAX_SECTION_IDS } from "@/lib/waxing-services-data";
 import {
+  buildHairDisplayPrice,
+  emptyHairLengthForm,
+  formatHairLengthPricingSummary,
+  hairLengthFormFromPricing,
+  parseHairLengthPricing,
+  type HairLengthFormPrices,
+} from "@/lib/hair-services-data";
+import {
   AdminField,
   AdminShell,
   adminCardClass,
@@ -37,6 +45,7 @@ const emptyForm = {
   featured: false,
   active: true,
   sortOrder: 0,
+  hairPrices: { ...emptyHairLengthForm },
 };
 
 export function AdminServicesClient({
@@ -88,6 +97,7 @@ export function AdminServicesClient({
     setForm((f) => ({
       ...f,
       categorySlug,
+      hairPrices: { ...emptyHairLengthForm },
       ...pickDefaultSection(categorySlug),
     }));
   }
@@ -151,10 +161,23 @@ export function AdminServicesClient({
       featured: s.featured,
       active: s.active,
       sortOrder: s.sortOrder,
+      hairPrices: hairLengthFormFromPricing(s.lengthPricing),
     });
     setMsg("");
     setShowForm(true);
     scrollToForm();
+  }
+
+  function onHairPriceChange(key: keyof HairLengthFormPrices, value: string) {
+    setForm((f) => {
+      const hairPrices = { ...f.hairPrices, [key]: value };
+      const lengthPricing = parseHairLengthPricing(hairPrices);
+      return {
+        ...f,
+        hairPrices,
+        price: lengthPricing ? buildHairDisplayPrice(lengthPricing) : f.price,
+      };
+    });
   }
 
   async function onImage(file: File | null) {
@@ -175,8 +198,22 @@ export function AdminServicesClient({
       setMsg("Please select a section for this service.");
       return;
     }
-    if (!form.name.trim() || !form.price.trim()) {
-      setMsg("Service name and price are required.");
+    if (!form.name.trim()) {
+      setMsg("Service name is required.");
+      return;
+    }
+
+    const lengthPricing =
+      form.categorySlug === "hair"
+        ? parseHairLengthPricing(form.hairPrices)
+        : undefined;
+    const resolvedPrice =
+      form.categorySlug === "hair" && lengthPricing
+        ? buildHairDisplayPrice(lengthPricing)
+        : form.price.trim();
+
+    if (!resolvedPrice) {
+      setMsg("Service price is required.");
       return;
     }
 
@@ -195,14 +232,18 @@ export function AdminServicesClient({
 
       const payload = {
         ...form,
+        price: resolvedPrice,
+        lengthPricing:
+          form.categorySlug === "hair" ? lengthPricing : undefined,
         sortOrder: nextSortOrder,
         duration: form.duration || undefined,
         imageUrl: form.imageUrl || undefined,
       };
+      const { hairPrices: _hairPrices, ...apiPayload } = payload;
       const res = await fetch("/api/admin/services", {
         method: editing ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editing ? { id: editing.id, ...payload } : payload),
+        body: JSON.stringify(editing ? { id: editing.id, ...apiPayload } : apiPayload),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Save failed");
@@ -304,6 +345,9 @@ export function AdminServicesClient({
                 </p>
                 <p className="mt-2 text-sm text-gold-light">
                   {s.price}
+                  {s.categorySlug === "hair" && s.lengthPricing
+                    ? ` · ${formatHairLengthPricingSummary(s.lengthPricing)}`
+                    : ""}
                   {s.duration ? ` · ${s.duration}` : ""}
                 </p>
               </div>
@@ -415,15 +459,91 @@ export function AdminServicesClient({
               />
             </AdminField>
             <div className="grid grid-cols-2 gap-3">
-              <AdminField label="Price">
-                <input
-                  className={adminInputClass}
-                  value={form.price}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, price: e.target.value }))
-                  }
-                />
-              </AdminField>
+              {form.categorySlug === "hair" ? (
+                <>
+                  <AdminField label="Short price (Rs.)">
+                    <input
+                      type="number"
+                      min={0}
+                      className={adminInputClass}
+                      value={form.hairPrices.short}
+                      onChange={(e) => onHairPriceChange("short", e.target.value)}
+                      placeholder="e.g. 800"
+                    />
+                  </AdminField>
+                  <AdminField label="Medium price (Rs.)">
+                    <input
+                      type="number"
+                      min={0}
+                      className={adminInputClass}
+                      value={form.hairPrices.medium}
+                      onChange={(e) => onHairPriceChange("medium", e.target.value)}
+                      placeholder="e.g. 1000"
+                    />
+                  </AdminField>
+                  <AdminField label="Long price (Rs.)">
+                    <input
+                      type="number"
+                      min={0}
+                      className={adminInputClass}
+                      value={form.hairPrices.long}
+                      onChange={(e) => onHairPriceChange("long", e.target.value)}
+                      placeholder="e.g. 1200"
+                    />
+                  </AdminField>
+                  <AdminField label="Display price">
+                    <input
+                      className={`${adminInputClass} cursor-not-allowed opacity-70`}
+                      value={form.price}
+                      readOnly
+                      tabIndex={-1}
+                      placeholder="Auto from length prices"
+                    />
+                  </AdminField>
+                  <p className="col-span-2 text-[11px] text-white/40">
+                    Add prices for each length you offer. Leave blank if not available
+                    (e.g. pixie cut = short only). For consult-only services, leave
+                    all length fields empty and enter a custom price label below.
+                  </p>
+                  {!parseHairLengthPricing(form.hairPrices) ? (
+                    <div className="col-span-2">
+                      <AdminField label="Custom price label">
+                        <input
+                          className={adminInputClass}
+                          value={form.price}
+                          onChange={(e) =>
+                            setForm((f) => ({ ...f, price: e.target.value }))
+                          }
+                          placeholder="e.g. Consult for quote"
+                        />
+                      </AdminField>
+                    </div>
+                  ) : null}
+                </>
+              ) : (
+                <>
+                  <AdminField label="Price">
+                    <input
+                      className={adminInputClass}
+                      value={form.price}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, price: e.target.value }))
+                      }
+                    />
+                  </AdminField>
+                  <AdminField label="Duration">
+                    <input
+                      className={adminInputClass}
+                      value={form.duration}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, duration: e.target.value }))
+                      }
+                    />
+                  </AdminField>
+                </>
+              )}
+            </div>
+            {form.categorySlug === "hair" ? (
               <AdminField label="Duration">
                 <input
                   className={adminInputClass}
@@ -433,7 +553,7 @@ export function AdminServicesClient({
                   }
                 />
               </AdminField>
-            </div>
+            ) : null}
             <AdminField label="Image">
               <input
                 type="file"

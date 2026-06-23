@@ -7,7 +7,7 @@ import {
 import { TeamArtistsSection } from "@/components/team/TeamArtistsSection";
 import { AboutStatsBanner } from "@/components/about/AboutStatsBanner";
 import { Reveal } from "@/components/ui/Reveal";
-import { getActiveTeamMembers } from "@/lib/team-store";
+import { getActiveTeamMembers, getTeamSection } from "@/lib/team-store";
 import type { CmsAboutCtaButton, CmsAboutPage } from "@/lib/cms-types";
 import { site } from "@/lib/site";
 
@@ -58,8 +58,11 @@ function ctaButtonClass(variant: CmsAboutCtaButton["variant"]): string {
 }
 
 export async function AboutPageContent({ about }: { about: CmsAboutPage }) {
-  const team = await getActiveTeamMembers();
-  const featuredTeam = team.slice(0, about.team.memberLimit);
+  const [team, teamSection] = await Promise.all([
+    getActiveTeamMembers(),
+    getTeamSection(),
+  ]);
+  const featuredTeam = team.slice(0, teamSection.aboutMemberLimit);
   const salonName = site.name.split(" ")[0];
 
   return (
@@ -171,12 +174,8 @@ export async function AboutPageContent({ about }: { about: CmsAboutPage }) {
       {/* Team */}
       {featuredTeam.length > 0 ? (
         <TeamArtistsSection
-          kicker={about.team.kicker}
-          title={about.team.title}
-          subtitle={about.team.subtitle}
-          index={about.team.sectionIndex}
+          section={teamSection}
           members={featuredTeam}
-          limit={about.team.memberLimit}
         />
       ) : null}
 

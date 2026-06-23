@@ -2,13 +2,10 @@ import type { ReactNode } from "react";
 import { HomeSection } from "@/components/home/HomeSection";
 import { Reveal } from "@/components/ui/Reveal";
 import { TeamArtistsCarousel } from "@/components/team/TeamArtistsCarousel";
-import type { CmsTeamMember } from "@/lib/cms-types";
+import type { CmsTeamMember, CmsTeamSection } from "@/lib/cms-types";
 
 type TeamArtistsSectionProps = {
-  kicker: string;
-  title: ReactNode;
-  subtitle?: string;
-  index?: string;
+  section: CmsTeamSection;
   members: CmsTeamMember[];
   limit?: number;
 };
@@ -18,7 +15,12 @@ function TeamArtistsHeader({
   title,
   subtitle,
   index,
-}: Pick<TeamArtistsSectionProps, "kicker" | "title" | "subtitle" | "index">) {
+}: {
+  kicker: string;
+  title: ReactNode;
+  subtitle?: string;
+  index?: string;
+}) {
   return (
     <div className="home-section-header home-section-header--center team-artists-header">
       {index ? (
@@ -48,10 +50,7 @@ function TeamArtistsHeader({
 }
 
 export function TeamArtistsSection({
-  kicker,
-  title,
-  subtitle,
-  index,
+  section,
   members,
   limit,
 }: TeamArtistsSectionProps) {
@@ -61,14 +60,12 @@ export function TeamArtistsSection({
     return (
       <HomeSection tone="midnight" className="team-artists-section">
         <TeamArtistsHeader
-          kicker={kicker}
-          title={title}
-          subtitle={subtitle}
-          index={index}
+          kicker={section.kicker}
+          title={section.title}
+          subtitle={section.subtitle}
+          index={section.sectionIndex}
         />
-        <p className="team-artists-section__empty">
-          Our artist profiles are being updated. Check back soon.
-        </p>
+        <p className="team-artists-section__empty">{section.emptyMessage}</p>
       </HomeSection>
     );
   }
@@ -76,13 +73,13 @@ export function TeamArtistsSection({
   return (
     <HomeSection tone="midnight" className="team-artists-section">
       <TeamArtistsHeader
-        kicker={kicker}
-        title={title}
-        subtitle={subtitle}
-        index={index}
+        kicker={section.kicker}
+        title={section.title}
+        subtitle={section.subtitle}
+        index={section.sectionIndex}
       />
       <Reveal delay={0.08}>
-        <TeamArtistsCarousel members={visible} />
+        <TeamArtistsCarousel members={visible} section={section} />
       </Reveal>
     </HomeSection>
   );

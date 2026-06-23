@@ -2,6 +2,7 @@ export const mainNavLinks = [
   { href: "/", label: "Home" },
   { href: "/services", label: "Service" },
   { href: "/offers", label: "Offers" },
+  { href: "/blog", label: "Blog" },
   { href: "/courses", label: "Course" },
   { href: "/about", label: "About" },
   { href: "/book", label: "Book" },

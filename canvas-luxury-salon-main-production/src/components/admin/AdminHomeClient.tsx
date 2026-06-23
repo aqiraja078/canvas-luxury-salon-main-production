@@ -674,18 +674,17 @@ export function AdminHomeClient({
         ) : null}
 
         {tab === "team" ? (
-          <div className="space-y-4">
-            <SectionMetaFields
-              value={page.team}
-              onChange={(team) => setPage((p) => ({ ...p, team }))}
-            />
-            <p className="text-sm text-white/55">
-              Team member cards are managed in{" "}
-              <Link href="/admin/team" className="text-gold underline">
-                Team
-              </Link>
-              . Top 3 active members show on the home page.
+          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-5 text-sm text-white/60">
+            <p>
+              The <strong className="text-gold">Our Team</strong> section is fully
+              managed in one place — headings, stats, limits, and artist profiles.
             </p>
+            <Link
+              href="/admin/team"
+              className="mt-4 inline-flex rounded-full bg-gold px-5 py-2 text-xs font-semibold uppercase tracking-wider text-black"
+            >
+              Open Team admin
+            </Link>
           </div>
         ) : null}
 

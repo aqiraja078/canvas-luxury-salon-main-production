@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { addBooking, getBookings } from "@/lib/bookings-store";
 import { validateBookingBody } from "@/lib/booking-validation";
 import { clientIpFromRequest, rateLimitBooking } from "@/lib/rate-limit";
-import { lookupServicePriceLabel } from "@/lib/service-pricing-lookup";
+import { lookupServicePriceLabelFromStore } from "@/lib/service-pricing-lookup";
 import {
   adminCookieName,
   verifySessionToken,
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
       email,
       phone,
       service,
-      priceLabel: lookupServicePriceLabel(service),
+      priceLabel: await lookupServicePriceLabelFromStore(service),
       date,
       time,
       message,

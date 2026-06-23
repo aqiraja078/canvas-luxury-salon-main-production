@@ -636,6 +636,155 @@ body {
     @apply leading-none;
   }
 
+  .huma-brand-logo {
+    transition: transform 0.35s ease;
+  }
+
+  .huma-brand-logo__script {
+    background: linear-gradient(
+      165deg,
+      #fff4d6 0%,
+      #e8d5a3 28%,
+      #c9a962 55%,
+      #a8893a 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 1px 8px rgba(201, 169, 98, 0.35));
+  }
+
+  .huma-brand-logo__tag {
+    background: linear-gradient(90deg, #d4b978, #e8d5a3, #c9a962, #e8d5a3, #d4b978);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    opacity: 0.92;
+  }
+
+  .group:hover .huma-brand-logo {
+    transform: scale(1.02);
+  }
+
+  .group:hover .huma-brand-logo__script {
+    filter: drop-shadow(0 2px 12px rgba(201, 169, 98, 0.5));
+  }
+
+  /* ── Blog ── */
+  .blog-page__hero {
+    @apply relative overflow-hidden;
+    background: radial-gradient(
+      ellipse 80% 55% at 50% 0%,
+      rgba(201, 169, 98, 0.12),
+      transparent 65%
+    );
+  }
+
+  .blog-page__kicker {
+    @apply text-caption-golden;
+  }
+
+  .blog-page__title {
+    @apply text-headline-lg mt-3 max-w-3xl;
+  }
+
+  .blog-page__subtitle {
+    @apply mt-5 max-w-2xl text-body-default text-white/70;
+  }
+
+  .blog-card {
+    @apply overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] transition duration-300;
+  }
+
+  .blog-card:hover {
+    @apply border-gold/35 bg-gold/[0.04];
+    box-shadow: 0 20px 50px -20px rgba(201, 169, 98, 0.25);
+  }
+
+  .blog-card--featured {
+    @apply grid gap-0 md:grid-cols-2;
+  }
+
+  .blog-card__media {
+    @apply relative overflow-hidden;
+  }
+
+  .blog-card--featured .blog-card__media {
+    @apply min-h-[220px] md:min-h-[320px];
+  }
+
+  .blog-card__image {
+    @apply h-full w-full object-cover transition duration-500;
+  }
+
+  .blog-card:not(.blog-card--featured) .blog-card__media {
+    @apply aspect-[16/10];
+  }
+
+  .blog-card:hover .blog-card__image {
+    transform: scale(1.04);
+  }
+
+  .blog-card__image--placeholder {
+    @apply bg-gradient-to-br from-gold/15 via-black to-black;
+  }
+
+  .blog-card__category {
+    @apply absolute left-4 top-4 rounded-full border border-gold/35 bg-black/60 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-gold-light backdrop-blur-sm;
+  }
+
+  .blog-card__body {
+    @apply flex h-full flex-col p-5 sm:p-6;
+  }
+
+  .blog-card__meta {
+    @apply flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-white/45;
+  }
+
+  .blog-card__title {
+    @apply mt-3 font-display text-xl text-white transition group-hover:text-gold-light;
+  }
+
+  .blog-card__title--lg {
+    @apply text-2xl sm:text-3xl;
+  }
+
+  .blog-card__excerpt {
+    @apply mt-3 flex-1 text-sm leading-relaxed text-white/60;
+  }
+
+  .blog-card__cta {
+    @apply mt-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-gold;
+  }
+
+  .blog-card__cta-arrow {
+    @apply transition group-hover:translate-x-1;
+  }
+
+  .blog-article__hero {
+    background: radial-gradient(
+      ellipse 70% 50% at 20% 0%,
+      rgba(201, 169, 98, 0.1),
+      transparent 60%
+    );
+  }
+
+  .blog-article__title {
+    @apply font-display text-3xl leading-tight text-white sm:text-4xl md:text-5xl;
+  }
+
+  .blog-article__cover {
+    box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.65);
+  }
+
+  .blog-article__content {
+    @apply space-y-5 text-base leading-[1.85] text-white/75 sm:text-lg;
+  }
+
+  .blog-article__content p:first-child::first-letter {
+    @apply float-left mr-2 mt-1 font-display text-5xl leading-none text-gold;
+  }
+
   /* ── Home landing — unified luxury section system ── */
   .home-landing {
     --home-gold-glow: rgba(201, 169, 98, 0.14);

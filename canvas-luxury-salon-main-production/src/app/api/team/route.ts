@@ -1,6 +1,14 @@
 import { NextResponse } from "next/server";
-import { getActiveTeamMembers } from "@/lib/team-store";
+import type { CmsTeamSection } from "@/lib/cms-types";
+import { getActiveTeamMembers, getTeamSection } from "@/lib/team-store";
 
 export async function GET() {
-  return NextResponse.json(await getActiveTeamMembers());
+  const [members, section] = await Promise.all([
+    getActiveTeamMembers(),
+    getTeamSection(),
+  ]);
+  return NextResponse.json({ members, section } satisfies {
+    members: Awaited<ReturnType<typeof getActiveTeamMembers>>;
+    section: CmsTeamSection;
+  });
 }

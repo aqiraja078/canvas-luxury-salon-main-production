@@ -4,7 +4,7 @@ import { validateAdminBookingBody, isBookingId } from "@/lib/booking-validation"
 import { notifyGuestOfBookingStatus } from "@/lib/booking-status-notifications";
 import { addBooking, updateBookingStatus, deleteBooking } from "@/lib/bookings-store";
 import type { BookingStatus } from "@/lib/bookings-types";
-import { lookupServicePriceLabel } from "@/lib/service-pricing-lookup";
+import { lookupServicePriceLabelFromStore } from "@/lib/service-pricing-lookup";
 
 export async function POST(request: Request) {
   try {
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
       email,
       phone,
       service,
-      priceLabel: priceLabel?.trim() || lookupServicePriceLabel(service),
+      priceLabel: priceLabel?.trim() || (await lookupServicePriceLabelFromStore(service)),
       date,
       time,
       message,

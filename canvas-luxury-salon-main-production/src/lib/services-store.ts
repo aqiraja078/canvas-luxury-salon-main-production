@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import { parsePriceLabelAmount } from "@/lib/admin-dashboard-stats";
 import { readCmsJson, writeCmsJson } from "@/lib/cms-store";
 import type { CmsService, ServiceCategorySlug } from "@/lib/cms-types";
+import { findHairServiceByName } from "@/lib/hair-services-data";
 import { buildFacialSeedServices, buildHairSeedServices, buildMakeupSeedServices, buildMehndiSeedServices, buildNailsSeedServices, buildSeedServices, buildWaxSeedServices } from "@/lib/services-seed";
 import { getUniqueServiceDescription } from "@/lib/service-descriptions";
 import { WAX_SECTION_IDS } from "@/lib/waxing-services-data";
@@ -15,6 +16,7 @@ const MAKEUP_MENU_SYNC_KEY = "services-makeup-menu-v1";
 const NAILS_MENU_SYNC_KEY = "services-nails-menu-v1";
 const MEHNDI_MENU_SYNC_KEY = "services-mehndi-menu-v2";
 const HAIR_MENU_SYNC_KEY = "services-hair-menu-v1";
+const HAIR_LENGTH_PRICING_SYNC_KEY = "services-hair-length-pricing-v1";
 
 async function ensureSeeded() {
   const seeded = await readCmsJson<boolean>(SEEDED_KEY, false);
@@ -167,6 +169,30 @@ async function ensureHairMenuSynced() {
   await writeCmsJson(HAIR_MENU_SYNC_KEY, true);
 }
 
+/** Backfill lengthPricing on hair rows from the static menu (one-time). */
+async function ensureHairLengthPricingSynced() {
+  const synced = await readCmsJson<boolean>(HAIR_LENGTH_PRICING_SYNC_KEY, false);
+  if (synced) return;
+
+  const list = await readCmsJson<CmsService[]>(KEY, []);
+  if (list.length === 0) return;
+
+  const updated = list.map((s) => {
+    if (s.categorySlug !== "hair") return s;
+    if (s.lengthPricing && Object.keys(s.lengthPricing).length > 0) return s;
+    const hair = findHairServiceByName(s.name);
+    if (!hair) return s;
+    return {
+      ...s,
+      lengthPricing: hair.lengthPricing,
+      updatedAt: new Date().toISOString(),
+    };
+  });
+
+  await writeCmsJson(KEY, updated);
+  await writeCmsJson(HAIR_LENGTH_PRICING_SYNC_KEY, true);
+}
+
 export async function getServices(): Promise<CmsService[]> {
   await ensureSeeded();
   await ensureDescriptionsSynced();
@@ -176,6 +202,7 @@ export async function getServices(): Promise<CmsService[]> {
   await ensureNailsMenuSynced();
   await ensureMehndiMenuSynced();
   await ensureHairMenuSynced();
+  await ensureHairLengthPricingSynced();
   const list = await readCmsJson<CmsService[]>(KEY, []);
   return list.sort((a, b) => a.sortOrder - b.sortOrder);
 }
@@ -267,6 +294,7 @@ export function groupServicesForMenu(services: CmsService[]) {
         meta?: string;
         imageUrl?: string;
         featured?: boolean;
+        lengthPricing?: CmsService["lengthPricing"];
       }>;
     }
   >();
@@ -289,6 +317,7 @@ export function groupServicesForMenu(services: CmsService[]) {
       meta: s.duration,
       imageUrl: s.imageUrl,
       featured: s.featured,
+      lengthPricing: s.lengthPricing,
     });
   }
 

@@ -2,7 +2,10 @@ import { randomUUID } from "crypto";
 import { waxingServiceSections } from "@/lib/waxing-services-data";
 import type { CmsService, ServiceCategorySlug } from "@/lib/cms-types";
 import { facialServiceSections } from "@/lib/facial-services-data";
-import { hairServiceSections } from "@/lib/hair-services-data";
+import {
+  type HairLengthPricing,
+  hairServiceSections,
+} from "@/lib/hair-services-data";
 import { makeupServiceSections } from "@/lib/makeup-services-data";
 import { mehndiServiceSections } from "@/lib/mehndi-services-data";
 import { nailsServiceSections } from "@/lib/nails-services-data";
@@ -30,6 +33,7 @@ type PushFn = (
     description: string;
     price: string;
     duration?: string;
+    lengthPricing?: HairLengthPricing;
   }
 ) => void;
 
@@ -50,6 +54,7 @@ function createPush(items: CmsService[], startOrder: number): { push: PushFn; ne
         service.description
       ),
       price: service.price,
+      lengthPricing: service.lengthPricing,
       duration: service.duration,
       imageUrl: CATEGORY_IMAGES[categorySlug],
       featured: false,
@@ -110,6 +115,7 @@ export function buildHairSeedServices(startOrder = 0): CmsService[] {
         name: s.name,
         description: s.hint,
         price: s.price,
+        lengthPricing: s.lengthPricing,
       });
     }
   }
@@ -184,6 +190,7 @@ export function buildSeedServices(): CmsService[] {
         name: s.name,
         description: s.hint,
         price: s.price,
+        lengthPricing: s.lengthPricing,
       });
     }
   }

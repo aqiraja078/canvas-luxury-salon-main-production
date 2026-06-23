@@ -9,7 +9,7 @@ export const site = {
   name: "Huma Beauty Saloon",
   tagline: "Premium beauty saloon Jhelum",
   description:
-    "More than a saloon — a complete beauty experience. From bridal glam to self-care rituals, we bring artistry, luxury, and confidence directly to your doorstep.",
+    "At Huma Beauty Saloon, we blend artistry, luxury, and care to create beautiful experiences that leave you feeling confident, radiant, and unforgettable.",
   email: "humaaqi96@gmail.com",
   phone: "+92 335 5462214",
   phoneDigits: "923355462214",

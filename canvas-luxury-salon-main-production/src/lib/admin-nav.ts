@@ -14,6 +14,7 @@ export const ADMIN_NAV: AdminNavItem[] = [
   { href: "/admin/home", label: "Home page", icon: "⌂", permission: "home.view" },
   { href: "/admin/about", label: "About page", icon: "◫", permission: "about.view" },
   { href: "/admin/offers", label: "Offers", icon: "◇", permission: "offers.view" },
+  { href: "/admin/blog", label: "Blog", icon: "✎", permission: "blog.view" },
   { href: "/admin/courses", label: "Courses", icon: "◐", permission: "courses.view" },
   {
     href: "/admin/course-applications",

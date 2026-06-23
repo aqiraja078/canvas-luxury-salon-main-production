@@ -1,9 +1,10 @@
+import { HumaBrandLogo } from "@/components/brand/HumaBrandLogo";
 import { HumaLogoMark } from "@/components/brand/HumaLogoMark";
 import { HumaLogoOrnate } from "@/components/brand/HumaLogoOrnate";
 import { site } from "@/lib/site";
 
 type LogoSize = "sm" | "md" | "lg";
-type LogoVariant = "full" | "mark" | "wordmark" | "ornate";
+type LogoVariant = "full" | "mark" | "wordmark" | "ornate" | "brand";
 
 type Props = {
   variant?: LogoVariant;
@@ -58,6 +59,10 @@ export function HumaLogo({
   size = "md",
   className = "",
 }: Props) {
+  if (variant === "brand" || variant === "full") {
+    return <HumaBrandLogo size={size} className={className} />;
+  }
+
   if (variant === "ornate") {
     return (
       <HumaLogoOrnate width={ORNATE_WIDTH[size]} className={className} title={site.name} />

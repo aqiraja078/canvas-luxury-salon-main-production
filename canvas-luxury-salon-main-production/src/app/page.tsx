@@ -75,7 +75,7 @@ export default async function HomePage() {
         variant={home.mehndi.variant}
       />
       <HomeWhy section={home.why} />
-      <HomeTeamDynamic meta={home.team} />
+      <HomeTeamDynamic />
       <HomeSteps section={home.steps} />
       <HomeTestimonials section={home.testimonials} />
       <HomeCta cta={home.cta} />

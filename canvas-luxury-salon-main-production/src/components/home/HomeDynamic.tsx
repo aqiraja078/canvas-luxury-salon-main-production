@@ -9,7 +9,7 @@ import type { CmsService } from "@/lib/cms-types";
 import { getActiveOffers } from "@/lib/offers-store";
 import { getActiveServices } from "@/lib/services-store";
 import type { CmsHomeSectionMeta } from "@/lib/cms-types";
-import { getActiveTeamMembers } from "@/lib/team-store";
+import { getActiveTeamMembers, getTeamSection } from "@/lib/team-store";
 import { TeamArtistsSection } from "@/components/team/TeamArtistsSection";
 import { serviceCategories } from "@/lib/site";
 
@@ -125,16 +125,17 @@ export async function HomeOffersDynamic() {
   );
 }
 
-export async function HomeTeamDynamic({ meta }: { meta: CmsHomeSectionMeta }) {
-  const team = await getActiveTeamMembers();
+export async function HomeTeamDynamic() {
+  const [team, section] = await Promise.all([
+    getActiveTeamMembers(),
+    getTeamSection(),
+  ]);
 
   return (
     <TeamArtistsSection
-      kicker={meta.kicker}
-      title={meta.title}
-      subtitle={meta.subtitle}
-      index={meta.sectionIndex}
+      section={section}
       members={team}
+      limit={section.homeMemberLimit}
     />
   );
 }

@@ -39,6 +39,7 @@ export default {
       fontFamily: {
         display: ["var(--font-playfair)", "Georgia", "serif"],
         sans: ["var(--font-poppins)", "system-ui", "sans-serif"],
+        script: ["var(--font-script)", "cursive"],
       },
       boxShadow: {
         glass: "0 8px 32px rgba(0, 0, 0, 0.12)",
