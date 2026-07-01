@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import type { CmsTeamMember, CmsTeamSection } from "@/lib/cms-types";
 import { site } from "@/lib/site";
@@ -210,8 +210,13 @@ export function TeamArtistsCarousel({
 }) {
   const reduce = useReducedMotion();
   const [index, setIndex] = useState(0);
+  const [motionReady, setMotionReady] = useState(false);
   const count = members.length;
   const member = members[index];
+
+  useEffect(() => {
+    setMotionReady(true);
+  }, []);
 
   const prev = useCallback(() => {
     setIndex((i) => (i - 1 + count) % count);
@@ -232,20 +237,21 @@ export function TeamArtistsCarousel({
   }));
 
   const slideKey = member.id;
-  const slideAnim = reduce
-    ? {}
-    : {
-        initial: { opacity: 0, y: 12 },
-        animate: { opacity: 1, y: 0 },
-        exit: { opacity: 0, y: -8 },
-        transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] as const },
-      };
+  const slideAnim =
+    reduce || !motionReady
+      ? { initial: false as const }
+      : {
+          initial: { opacity: 0, y: 12 },
+          animate: { opacity: 1, y: 0 },
+          exit: { opacity: 0, y: -8 },
+          transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] as const },
+        };
 
   return (
     <div className="team-artists-layout">
       <article className="team-artists-profile">
         <div className="team-artists-profile__media">
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="wait" initial={false}>
             <motion.div key={slideKey} className="team-artists-profile__media-inner" {...slideAnim}>
               <MemberImage member={member} section={section} />
             </motion.div>
@@ -277,7 +283,7 @@ export function TeamArtistsCarousel({
           ) : null}
         </div>
 
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" initial={false}>
           <motion.div key={slideKey} className="team-artists-profile__body" {...slideAnim}>
             <h3 className="team-artists-profile__name">{member.name}</h3>
             <p className="team-artists-profile__role">{member.role}</p>
@@ -336,43 +342,45 @@ export function TeamArtistsCarousel({
       </article>
 
       <article className="team-artists-detail">
-        <AnimatePresence mode="wait">
-          <motion.div key={slideKey} className="team-artists-detail__inner" {...slideAnim}>
-            <div className="team-artists-detail__about">
-              <h3 className="team-artists-detail__heading">
-                {aboutHeading(member, section)}
-              </h3>
-              <div className="team-artists-detail__rule" aria-hidden />
-              <p className="team-artists-detail__text">
-                {aboutDetail(member, section)}
-              </p>
-            </div>
+        <div className="team-artists-detail__content">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div key={slideKey} className="team-artists-detail__inner" {...slideAnim}>
+              <div className="team-artists-detail__about">
+                <h3 className="team-artists-detail__heading">
+                  {aboutHeading(member, section)}
+                </h3>
+                <div className="team-artists-detail__rule" aria-hidden />
+                <p className="team-artists-detail__text">
+                  {aboutDetail(member, section)}
+                </p>
+              </div>
 
-            <div className="team-artists-skills">
-              {skills.map((skill) => (
-                <div key={skill.title} className="team-artists-skill">
-                  <span className="team-artists-skill__icon" aria-hidden>
-                    <SkillIcon type={skill.icon} />
-                  </span>
-                  <div>
-                    <p className="team-artists-skill__title">{skill.title}</p>
-                    <p className="team-artists-skill__desc">{skill.description}</p>
+              <div className="team-artists-skills">
+                {skills.map((skill) => (
+                  <div key={skill.title} className="team-artists-skill">
+                    <span className="team-artists-skill__icon" aria-hidden>
+                      <SkillIcon type={skill.icon} />
+                    </span>
+                    <div>
+                      <p className="team-artists-skill__title">{skill.title}</p>
+                      <p className="team-artists-skill__desc">{skill.description}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
 
-            <div className="team-artists-stats">
-              {stats.map((stat) => (
-                <div key={stat.label} className="team-artists-stat">
-                  <StatIcon type={stat.icon} />
-                  <p className="team-artists-stat__value">{stat.value}</p>
-                  <p className="team-artists-stat__label">{stat.label}</p>
-                </div>
-              ))}
+        <div className="team-artists-stats" key={`stats-${slideKey}`}>
+          {stats.map((stat) => (
+            <div key={stat.label} className="team-artists-stat">
+              <StatIcon type={stat.icon} />
+              <p className="team-artists-stat__value">{stat.value}</p>
+              <p className="team-artists-stat__label">{stat.label}</p>
             </div>
-          </motion.div>
-        </AnimatePresence>
+          ))}
+        </div>
       </article>
     </div>
   );

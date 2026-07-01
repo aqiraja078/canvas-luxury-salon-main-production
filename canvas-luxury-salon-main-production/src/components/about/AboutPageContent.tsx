@@ -202,9 +202,7 @@ export async function AboutPageContent({ about }: { about: CmsAboutPage }) {
         </div>
       </HomeSection>
 
-      <Reveal>
-        <AboutStatsBanner stats={about.stats} />
-      </Reveal>
+      <AboutStatsBanner stats={about.stats} />
 
       {/* Cities */}
       <HomeSection tone="gold-mist">

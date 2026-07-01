@@ -26,6 +26,7 @@ function offerToSlideItem(offer: CmsOffer): HomeOfferSlideItem {
     promoCode: offer.promoCode,
     iconName,
     includedServices: offer.includedServices,
+    imageUrl: offer.imageUrl,
   };
 }
 
@@ -45,7 +46,7 @@ export function HomeServiceOffersSection({ meta, offers }: Props) {
       id="home-offers"
       tone="obsidian"
       bleed
-      className="!pb-10 sm:!pb-12"
+      className="home-offers-section !pb-6 sm:!pb-12"
     >
       <div className="home-section__inner">
         <HomeSectionHeader
@@ -56,11 +57,11 @@ export function HomeServiceOffersSection({ meta, offers }: Props) {
         />
       </div>
 
-      <div className="mt-2 sm:mt-3">
+      <div className="mt-0 sm:mt-3">
         <HomeServiceOffersSlider items={items} />
       </div>
 
-      <div className="home-section__inner mt-4 flex justify-center sm:mt-5">
+      <div className="home-section__inner mt-3 flex justify-center sm:mt-5">
         <Link
           href="/offers"
           className="inline-flex min-h-[44px] w-full max-w-xs items-center justify-center rounded-full border border-gold/45 bg-gold/10 px-8 text-xs font-semibold uppercase tracking-[0.2em] text-gold transition hover:bg-gold/15 sm:w-auto"

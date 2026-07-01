@@ -1,10 +1,16 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { PageLoader } from "@/components/layout/PageLoader";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import type { SiteNavLink } from "@/lib/navigation";
+
+const MobileBottomNav = dynamic(
+  () => import("@/components/layout/MobileBottomNav").then((mod) => mod.MobileBottomNav),
+  { ssr: false },
+);
 
 function isAdminPath(pathname: string | null): boolean {
   return pathname?.startsWith("/admin") ?? false;
@@ -45,10 +51,11 @@ export function SiteChrome({
         headerNavLinks={headerNavLinks}
         serviceNavLinks={serviceNavLinks}
       />
-      <main id="main-content" className="min-h-screen" tabIndex={-1}>
+      <main id="main-content" className="min-h-screen has-mobile-bottom-nav md:pb-0" tabIndex={-1}>
         {children}
       </main>
-      {footer}
+      <div className="has-mobile-bottom-nav md:pb-0">{footer}</div>
+      <MobileBottomNav serviceNavLinks={serviceNavLinks} />
       <WhatsAppButton />
     </>
   );

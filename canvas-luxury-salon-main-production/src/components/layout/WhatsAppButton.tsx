@@ -11,11 +11,7 @@ export function WhatsAppButton() {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-luxury md:h-[3.75rem] md:w-[3.75rem]"
-      style={{
-        bottom: "max(1.25rem, env(safe-area-inset-bottom))",
-        right: "max(1.25rem, env(safe-area-inset-right))",
-      }}
+      className="whatsapp-fab fixed z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-luxury md:h-[3.75rem] md:w-[3.75rem]"
       aria-label="Chat on WhatsApp"
       whileHover={{ scale: 1.08 }}
       whileTap={{ scale: 0.94 }}
