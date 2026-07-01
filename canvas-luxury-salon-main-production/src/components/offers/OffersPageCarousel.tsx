@@ -31,7 +31,7 @@ export function OffersPageCarousel({ offers }: Props) {
   if (count === 1) {
     return (
       <div className="offers-carousel offers-carousel--single">
-        <OffersPremiumCard offer={offers[0]} active />
+        <OffersPremiumCard offer={offers[0]} />
       </div>
     );
   }
@@ -55,8 +55,11 @@ export function OffersPageCarousel({ offers }: Props) {
           style={{ transform: `translateX(calc(-${index} * (min(88vw, 22rem) + 1rem)))` }}
         >
           {offers.map((offer, idx) => (
-            <div key={offer.id} className="offers-carousel__slide">
-              <OffersPremiumCard offer={offer} active={idx === index} />
+            <div
+              key={offer.id}
+              className={`offers-carousel__slide${idx === index ? " offers-carousel__slide--active" : ""}`}
+            >
+              <OffersPremiumCard offer={offer} />
             </div>
           ))}
         </div>
