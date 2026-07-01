@@ -3,6 +3,7 @@ import type {
   CmsHomePage,
 } from "@/lib/cms-types";
 import { buildDefaultHomePage } from "@/lib/home-page-defaults";
+import { mergeHeroFields } from "@/lib/hero-cms-utils";
 
 function mergeCategorySection(
   defaults: CmsHomeCategorySection,
@@ -26,7 +27,7 @@ export function normalizeHomePage(
   return {
     ...defaults,
     ...stored,
-    hero: { ...defaults.hero, ...stored.hero },
+    hero: mergeHeroFields(defaults.hero, stored.hero),
     makeup: mergeCategorySection(defaults.makeup, stored.makeup),
     offers: { ...defaults.offers, ...stored.offers },
     hair: mergeCategorySection(defaults.hair, stored.hair),

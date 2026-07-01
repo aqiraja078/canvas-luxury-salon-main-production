@@ -4,15 +4,25 @@ import { HomeHero } from "@/components/home/HomeHeroAnimated";
 import { HomeCategoryServicesRow } from "@/components/home/HomeCategoryServicesRow";
 import { HomeServiceOffersSection } from "@/components/home/HomeServiceOffersSection";
 import { activeHomeCards, getHomePage } from "@/lib/home-page-store";
+import { getActiveOffers } from "@/lib/offers-store";
+import { buildPageMetadata } from "@/lib/seo-metadata";
+import { site } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = buildPageMetadata({
+  title: "Home Beauty Services in Jhelum, Dina & Gujrat",
+  description: site.description,
+  path: "/",
+});
+
 export default async function HomePage() {
-  const home = await getHomePage();
+  const [home, offers] = await Promise.all([getHomePage(), getActiveOffers()]);
 
   return (
-    <main className="home-landing">
+    <div className="home-landing">
       <HomeHero hero={home.hero} />
+      <HomeServiceOffersSection meta={home.offers} offers={offers} />
       <HomeCategoryServicesRow
         kicker={home.makeup.kicker}
         title={home.makeup.title}
@@ -23,7 +33,6 @@ export default async function HomePage() {
         sectionIndex={home.makeup.sectionIndex}
         variant={home.makeup.variant}
       />
-      <HomeServiceOffersSection meta={home.offers} />
       <HomeCategoryServicesRow
         kicker={home.hair.kicker}
         title={home.hair.title}
@@ -79,6 +88,6 @@ export default async function HomePage() {
       <HomeSteps section={home.steps} />
       <HomeTestimonials section={home.testimonials} />
       <HomeCta cta={home.cta} />
-    </main>
+    </div>
   );
 }

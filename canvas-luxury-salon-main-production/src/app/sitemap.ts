@@ -1,11 +1,15 @@
 import type { MetadataRoute } from "next";
 import { getPublicSiteOrigin } from "@/lib/public-site-url";
+import { getActiveBlogPosts } from "@/lib/blog-store";
 import { getActiveCourses } from "@/lib/courses-store";
 
 const base = getPublicSiteOrigin().replace(/\/$/, "");
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const courses = await getActiveCourses();
+  const [courses, blogPosts] = await Promise.all([
+    getActiveCourses(),
+    getActiveBlogPosts(),
+  ]);
   const paths = [
     "",
     "/services",
@@ -17,6 +21,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/services/mehndi",
     "/about",
     "/offers",
+    "/gallery",
+    "/blog",
+    ...blogPosts.map((p) => `/blog/${p.slug}`),
     "/courses",
     ...courses.map((c) => `/courses/${c.slug}`),
     "/contact",
@@ -25,7 +32,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return paths.map((path) => ({
     url: `${base}${path}`,
     lastModified: new Date(),
-    changeFrequency: "weekly",
-    priority: path === "" ? 1 : 0.8,
+    changeFrequency: path.startsWith("/blog/") ? "monthly" : "weekly",
+    priority: path === "" ? 1 : path === "/blog" ? 0.85 : 0.8,
   }));
 }

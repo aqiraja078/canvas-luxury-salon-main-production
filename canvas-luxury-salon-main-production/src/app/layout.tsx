@@ -5,6 +5,7 @@ import { SiteChrome } from "@/components/layout/SiteChrome";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getMetadataBase } from "@/lib/public-site-url";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo-metadata";
 import { headerNavLinks, mainNavLinks, serviceNavLinks, type SiteNavLink } from "@/lib/navigation";
 import { site } from "@/lib/site";
 
@@ -46,6 +47,15 @@ export const metadata: Metadata = {
     template: `%s | ${site.name}`,
   },
   description: site.description,
+  keywords: [
+    "beauty salon",
+    "home beauty services",
+    "bridal makeup",
+    "Jhelum",
+    "Dina",
+    "Gujrat",
+    "Huma Beauty Saloon",
+  ],
   openGraph: {
     title: site.name,
     description: site.description,
@@ -53,17 +63,19 @@ export const metadata: Metadata = {
     type: "website",
     url: "/",
     siteName: site.name,
+    images: [{ url: DEFAULT_OG_IMAGE, alt: site.name, width: 512, height: 512 }],
   },
   twitter: {
     card: "summary_large_image",
     title: site.name,
     description: site.description,
+    images: [DEFAULT_OG_IMAGE],
   },
   robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a0a0a",
+  themeColor: "#090909",
   width: "device-width",
   initialScale: 1,
 };

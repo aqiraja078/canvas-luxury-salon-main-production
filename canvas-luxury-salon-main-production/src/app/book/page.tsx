@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Reveal } from "@/components/ui/Reveal";
 import { BookingForm } from "@/components/booking/BookingForm";
+import { buildPageMetadata } from "@/lib/seo-metadata";
 import { site } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
   title: "Book appointment",
-  description: `Schedule a visit at ${site.name}.`,
-};
+  description: `Schedule a home beauty visit with ${site.name} in Jhelum, Dina, or Gujrat.`,
+  path: "/book",
+});
 
 export default function BookPage() {
   return (

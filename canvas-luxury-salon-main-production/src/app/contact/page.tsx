@@ -2,12 +2,14 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Reveal } from "@/components/ui/Reveal";
 import { ContactPremiumCard } from "@/components/contact/ContactPremiumCard";
-import { site } from "@/lib/site";
+import { buildPageMetadata } from "@/lib/seo-metadata";
+import { site, whatsappUrl } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
   title: "Contact",
   description: `Contact ${site.name} — home beauty in Jhelum, Dina & Gujrat. WhatsApp, call, or book online.`,
-};
+  path: "/contact",
+});
 
 const FAQ = [
   {
@@ -76,7 +78,7 @@ export default function ContactPage() {
                 </Link>
                 <div className="contact-hero-row contact-hero-row--2">
                   <a
-                    href={`https://wa.me/${site.phoneDigits}`}
+                    href={whatsappUrl()}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="contact-hero-btn contact-hero-btn--whatsapp"
@@ -207,7 +209,7 @@ export default function ContactPage() {
                 Ready to book?
               </Link>
               <a
-                href={`https://wa.me/${site.phoneDigits}?text=${encodeURIComponent("Hello, I would like more information about your services.")}`}
+                href={whatsappUrl("Hello, I would like more information about your services.")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex min-h-[44px] items-center justify-center rounded-full border border-gold/40 px-8 text-xs font-semibold uppercase tracking-[0.2em] text-gold"

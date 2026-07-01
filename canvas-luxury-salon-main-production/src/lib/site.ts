@@ -17,10 +17,17 @@ export const site = {
   address: "Jhelum, Dina and Gujrat",
   social: {
     instagram: "https://www.instagram.com/huma_beauty.saloon/",
-    facebook: "https://facebook.com",
+    facebook: "https://www.instagram.com/huma_beauty.saloon/",
     tiktok: "https://www.tiktok.com/@humabeautysaloonjhe",
   },
 } as const;
+
+export function whatsappUrl(message?: string): string {
+  const text =
+    message ??
+    `Hello ${site.name}, I would like to book an appointment.`;
+  return `https://wa.me/${site.phoneDigits}?text=${encodeURIComponent(text)}`;
+}
 
 export const serviceCategories = [
   {

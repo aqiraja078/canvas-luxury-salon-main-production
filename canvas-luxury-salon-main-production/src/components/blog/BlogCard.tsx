@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { CmsBlogPost } from "@/lib/cms-types";
 import { formatBlogDate } from "@/lib/blog-utils";
+import { BlogImage } from "@/components/blog/BlogImage";
 
 type Props = {
   post: CmsBlogPost;
@@ -17,14 +18,9 @@ export function BlogCard({ post, variant = "default" }: Props) {
     >
       <div className="blog-card__media">
         {post.coverImage ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={post.coverImage}
-            alt=""
-            className="blog-card__image"
-          />
+          <BlogImage src={post.coverImage} alt={post.title} className="blog-image--card" />
         ) : (
-          <div className="blog-card__image blog-card__image--placeholder" />
+          <div className="blog-image__frame blog-card__image--placeholder" />
         )}
         <span className="blog-card__category">{post.category}</span>
       </div>

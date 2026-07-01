@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { requirePermission } from "@/lib/admin-auth";
 import { getHomePage, saveHomePage } from "@/lib/home-page-store";
 import type { CmsHomePage } from "@/lib/cms-types";
@@ -24,6 +25,8 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: "Invalid home page data" }, { status: 400 });
     }
     const saved = await saveHomePage(body);
+    revalidatePath("/");
+    revalidatePath("/admin/home");
     return NextResponse.json(saved);
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Failed";

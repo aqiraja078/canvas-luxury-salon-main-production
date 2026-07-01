@@ -1,0 +1,85 @@
+[
+  {
+    "id": "9fdfed0b-a180-4726-9588-6b0ce3257254",
+    "category": "before-after",
+    "mediaType": "before-after",
+    "title": "Bridal glow transformation",
+    "caption": "Pre-bridal facial + HD makeup",
+    "beforeImageUrl": "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=800&q=85",
+    "afterImageUrl": "https://images.unsplash.com/photo-1522337360788-8b13dee2a3a0?w=800&q=85",
+    "sortOrder": 0,
+    "active": true,
+    "createdAt": "2026-07-01T12:48:47.681Z",
+    "updatedAt": "2026-07-01T12:48:47.681Z"
+  },
+  {
+    "id": "a504018f-4631-4cce-bc86-e97d0b51deb5",
+    "category": "bridal",
+    "mediaType": "image",
+    "title": "Walima bridal glam",
+    "imageUrl": "https://i.pinimg.com/736x/ae/98/b3/ae98b360d36f7de2f3779737997f291a.jpg",
+    "sortOrder": 0,
+    "active": true,
+    "createdAt": "2026-07-01T12:48:47.681Z",
+    "updatedAt": "2026-07-01T12:48:47.681Z"
+  },
+  {
+    "id": "0a766022-bcd6-4331-969d-da00ba6346d9",
+    "category": "hair",
+    "mediaType": "image",
+    "title": "Balayage refresh",
+    "imageUrl": "https://images.unsplash.com/photo-1562322140-8baeececf3df?w=800&q=85",
+    "sortOrder": 0,
+    "active": true,
+    "createdAt": "2026-07-01T12:48:47.681Z",
+    "updatedAt": "2026-07-01T12:48:47.681Z"
+  },
+  {
+    "id": "3e3b8aa5-9d01-46d1-9447-4ad489fe204b",
+    "category": "facial",
+    "mediaType": "image",
+    "title": "Pre-bridal glow facial",
+    "imageUrl": "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?w=800&q=85",
+    "sortOrder": 0,
+    "active": true,
+    "createdAt": "2026-07-01T12:48:47.681Z",
+    "updatedAt": "2026-07-01T12:48:47.681Z"
+  },
+  {
+    "id": "2e04bc5e-9e4f-4d66-8a4f-40cd8656aa00",
+    "category": "mehndi",
+    "mediaType": "image",
+    "title": "Dense bridal mehndi",
+    "imageUrl": "https://i.pinimg.com/736x/ae/84/5f/ae845fba0f519d795710e90bf6a866ec.jpg",
+    "sortOrder": 0,
+    "active": true,
+    "createdAt": "2026-07-01T12:48:47.681Z",
+    "updatedAt": "2026-07-01T12:48:47.681Z"
+  },
+  {
+    "category": "reels",
+    "mediaType": "video",
+    "title": "Best Hair Service Available at Huma beauty saloon Jhelum 📞 Book now #HumaBeautySaloon #BridalMakeup #homeservice #haircare #hairtransformation",
+    "caption": "by huma_beauty_saloon",
+    "imageUrl": "https://p16-common-sign.tiktokcdn.com/tos-alisg-p-0037/oYdAnBfEIgQcqCmUUIBEReAu8dIjFnEYDsV6oD~tplv-tiktokx-origin.image?dr=14575&x-expires=1783083600&x-signature=pV7PJ7E6LZDLNU4HWk%2FO96xPdag%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my",
+    "videoUrl": "https://www.tiktok.com/@humabeautysaloonjhe/video/7657141639638453525?is_from_webapp=1&sender_device=pc&web_id=7644695929635636743",
+    "sortOrder": 1,
+    "active": true,
+    "id": "2ad44425-f8a3-4e6e-b79b-428bad8426f6",
+    "createdAt": "2026-07-01T13:02:47.396Z",
+    "updatedAt": "2026-07-01T13:02:47.396Z"
+  },
+  {
+    "category": "reels",
+    "mediaType": "video",
+    "title": "Bridal makeup",
+    "videoUrl": "https://www.tiktok.com/@humabeautysaloonjhe/video/7631137952298454292?is_from_webapp=1&sender_device=pc&web_id=7644695929635636743",
+    "sortOrder": 2,
+    "active": true,
+    "id": "92906e88-b2c0-4392-a77f-932bc5c3522d",
+    "createdAt": "2026-07-01T12:55:52.463Z",
+    "updatedAt": "2026-07-01T13:05:07.639Z",
+    "caption": "by huma_beauty_saloon",
+    "imageUrl": "https://p19-common-sign.tiktokcdn.com/tos-alisg-p-0037/oc95DfpwEEZUQ5PhbEpgFBQnQiRzAqGMfBbJLm~tplv-tiktokx-origin.image?dr=14575&x-expires=1783083600&x-signature=X1La94hA2YOVAnCVVHc2zCPHH9s%3D&t=4d5b0474&ps=13740610&shp=81f88b70&shcp=43f4a2f9&idc=my"
+  }
+]

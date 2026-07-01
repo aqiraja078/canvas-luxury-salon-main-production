@@ -34,44 +34,53 @@ function categorySection(
 }
 
 export function buildDefaultHomePage(): CmsHomePage {
-  const salonName = site.name.split(" ")[0];
   const ts = new Date().toISOString();
 
   return {
     hero: {
       imageUrl:
         "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1920&q=85",
-      badgeText: `Doorstep luxury · ${salonName}`,
-      kicker: site.tagline,
-      titleLine1: "Salon-grade beauty,",
-      titleLine2: "without leaving home",
+      secondaryImageUrl:
+        "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=900&q=85",
+      badgeText: "Doorstep Luxury Beauty",
+      kicker: "Premium Beauty Saloon • Jhelum",
+      titleLine1: "Luxury Beauty,",
+      titleLine2: "Delivered To Your Doorstep",
+      scriptLine: "Because You Deserve The Best ✨",
       description: site.description,
       footnote:
-        "Bridal · Mehndi · Hair · Skin · Nails — one message away on WhatsApp",
-      primaryBtnLabel: "Book appointment",
+        "Bridal · Mehndi · Hair · Skin · Nails — home service across Jhelum, Dina & Gujrat",
+      primaryBtnLabel: "Book Appointment",
       primaryBtnHref: "/book",
-      secondaryBtnLabel: "Explore services",
-      secondaryBtnHref: "/services",
+      secondaryBtnLabel: "WhatsApp Now",
+      secondaryBtnHref: "/contact",
+      portfolioBtnLabel: "View Bridal Portfolio",
+      portfolioBtnHref: "/gallery#bridal",
       trustItems: [
         {
-          value: "3 cities",
-          label: "Jhelum · Dina · Gujrat",
-          hint: "We travel to you",
+          value: "4.9/5",
+          label: "Google Reviews",
+          hint: "★★★★★",
         },
         {
-          value: "8AM – 10PM",
-          label: "Morning to evening",
-          hint: "Flexible home slots",
+          value: "500+",
+          label: "Happy Clients",
+          hint: "Trusted across Jhelum",
         },
         {
-          value: "Full setup",
-          label: "Light · mirror · kit",
-          hint: "Salon at your door",
+          value: "1000+",
+          label: "Services Completed",
+          hint: "Bridal to everyday glam",
         },
         {
-          value: "48 hrs",
-          label: "Booking confirmed",
-          hint: "Clear quote upfront",
+          value: "Verified",
+          label: "Beauty Experts",
+          hint: "Trained professional artists",
+        },
+        {
+          value: "100%",
+          label: "Hygienic Service",
+          hint: "Your safety is our priority",
         },
       ],
     },

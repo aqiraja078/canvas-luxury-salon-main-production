@@ -68,6 +68,51 @@ export function getMonthRange(ref = new Date()): { from: string; to: string } {
   return { from: localDateKey(start), to: localDateKey(end) };
 }
 
+/** First/last day of a calendar month (month is 1–12). */
+export function getMonthRangeFor(year: number, month: number): {
+  from: string;
+  to: string;
+} {
+  const start = new Date(year, month - 1, 1);
+  const end = new Date(year, month, 0);
+  return { from: localDateKey(start), to: localDateKey(end) };
+}
+
+/** `YYYY-MM` for &lt;input type="month"&gt; from a range start date. */
+export function monthInputFromDate(from: string): string {
+  if (!from || from.length < 7) return "";
+  return from.slice(0, 7);
+}
+
+export function isInDateRange(
+  dateStr: string,
+  from: string,
+  to: string
+): boolean {
+  if (from && dateStr < from) return false;
+  if (to && dateStr > to) return false;
+  return true;
+}
+
+export function formatPeriodLabel(from: string, to: string): string {
+  if (!from && !to) return "All dates";
+  if (from && to && from.slice(0, 7) === to.slice(0, 7)) {
+    return new Date(`${from}T12:00:00`).toLocaleDateString("en-PK", {
+      month: "long",
+      year: "numeric",
+    });
+  }
+  const fmt = (d: string) =>
+    new Date(`${d}T12:00:00`).toLocaleDateString("en-PK", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  if (from && to) return `${fmt(from)} – ${fmt(to)}`;
+  if (from) return `From ${fmt(from)}`;
+  return `Until ${fmt(to)}`;
+}
+
 export function computeConfirmedSale(
   bookings: Booking[],
   predicate: (booking: Booking) => boolean
@@ -75,6 +120,17 @@ export function computeConfirmedSale(
   return bookings
     .filter((b) => b.status === "confirmed" && predicate(b))
     .reduce((sum, b) => sum + parsePriceLabelAmount(b.priceLabel), 0);
+}
+
+/** Confirmed booking revenue within an appointment date range (inclusive). */
+export function computeConfirmedSaleInRange(
+  bookings: Booking[],
+  from: string,
+  to: string
+): number {
+  return computeConfirmedSale(bookings, (b) =>
+    isInDateRange(b.date, from, to)
+  );
 }
 
 export type BookingPeriodStats = {

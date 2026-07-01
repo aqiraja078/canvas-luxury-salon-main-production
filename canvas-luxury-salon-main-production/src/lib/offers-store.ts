@@ -4,6 +4,24 @@ import type { CmsOffer } from "@/lib/cms-types";
 
 const KEY = "offers";
 
+function dedupeOffers(offers: CmsOffer[]): CmsOffer[] {
+  const seenIds = new Set<string>();
+  const seenTitles = new Set<string>();
+  const unique: CmsOffer[] = [];
+
+  for (const offer of offers) {
+    const id = offer.id?.trim();
+    const titleKey = offer.title.trim().toLowerCase();
+    if (id && seenIds.has(id)) continue;
+    if (seenTitles.has(titleKey)) continue;
+    if (id) seenIds.add(id);
+    seenTitles.add(titleKey);
+    unique.push(offer);
+  }
+
+  return unique;
+}
+
 async function ensureSeeded() {
   const list = await readCmsJson<CmsOffer[] | null>(KEY, null);
   if (list !== null) return;
@@ -61,8 +79,9 @@ async function ensureSeeded() {
 
 export async function getOffers(): Promise<CmsOffer[]> {
   await ensureSeeded();
-  return (await readCmsJson<CmsOffer[]>(KEY, [])).sort(
-    (a, b) => a.sortOrder - b.sortOrder
+  const list = await readCmsJson<CmsOffer[]>(KEY, []);
+  return dedupeOffers(
+    [...list].sort((a, b) => a.sortOrder - b.sortOrder || a.title.localeCompare(b.title))
   );
 }
 

@@ -54,12 +54,12 @@ export function HomeServices() {
                 href={s.href}
                 className="service-card group relative block overflow-hidden"
               >
-                <div className="relative aspect-[5/6] sm:aspect-[4/5] overflow-hidden">
+                <div className="service-card__media relative aspect-[5/6] overflow-hidden sm:aspect-[4/5]">
                   <Image
                     src={s.image}
                     alt={s.title}
                     fill
-                    className="object-cover transition duration-700 group-hover:scale-110"
+                    className="object-cover"
                     sizes="(max-width: 640px) 100vw, 25vw"
                   />
                   <div className="absolute inset-0 overlay-dark-light" />

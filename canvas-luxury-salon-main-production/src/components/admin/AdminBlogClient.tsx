@@ -10,6 +10,7 @@ import {
   adminInputClass,
   uploadAdminImage,
 } from "@/components/admin/AdminShell";
+import { BlogImage } from "@/components/blog/BlogImage";
 
 const BLOG_CATEGORIES = [
   "Bridal",
@@ -412,7 +413,7 @@ export function AdminBlogClient({
                     onChange={(e) =>
                       setForm((f) => ({ ...f, content: e.target.value }))
                     }
-                    placeholder="Write paragraphs separated by a blank line…"
+                    placeholder="Paragraphs separated by a blank line. Use ## for bold headings, **text** for bold words, and paste an image URL on its own line."
                   />
                 </AdminField>
                 <div className="grid grid-cols-2 gap-3">
@@ -505,11 +506,10 @@ export function AdminBlogClient({
                     className="text-sm text-white/70"
                   />
                   {form.coverImage ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <BlogImage
                       src={form.coverImage}
                       alt="Cover preview"
-                      className="mt-3 aspect-[16/10] w-full rounded-xl object-cover"
+                      className="mt-3 overflow-hidden rounded-xl border border-white/10"
                     />
                   ) : null}
                 </AdminField>

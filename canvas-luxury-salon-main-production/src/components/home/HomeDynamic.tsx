@@ -48,20 +48,20 @@ export async function HomeServicesDynamic() {
         {cards.map((s, idx) => (
           <Reveal key={s.slug} delay={idx * 0.08} scale>
             <Link href={s.href} className="service-card group relative block overflow-hidden">
-              <div className="relative aspect-[5/6] overflow-hidden sm:aspect-[4/5]">
+              <div className="service-card__media relative aspect-[5/6] overflow-hidden sm:aspect-[4/5]">
                 {s.image.startsWith("/api/") ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={s.image}
                     alt={s.title}
-                    className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
+                    className="h-full w-full object-cover"
                   />
                 ) : (
                   <Image
                     src={s.image}
                     alt={s.title}
                     fill
-                    className="object-cover transition duration-700 group-hover:scale-110"
+                    className="object-cover"
                     sizes="(max-width: 640px) 100vw, 25vw"
                   />
                 )}

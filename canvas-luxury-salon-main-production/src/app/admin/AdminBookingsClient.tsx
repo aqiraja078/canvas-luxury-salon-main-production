@@ -5,6 +5,13 @@ import type { Booking, BookingStatus } from "@/lib/bookings-types";
 import type { AdminSessionUser } from "@/lib/admin-session-user";
 import { AdminShell, adminCardClass, adminInputClass } from "@/components/admin/AdminShell";
 import { AdminManualBookingModal } from "@/components/admin/AdminManualBookingModal";
+import {
+  computeConfirmedSaleInRange,
+  formatPeriodLabel,
+  formatPkr,
+  getMonthRangeFor,
+  monthInputFromDate,
+} from "@/lib/admin-dashboard-stats";
 
 const DISPLAY_LOCALE = "en-GB";
 
@@ -47,16 +54,7 @@ function parseService(service: string) {
 }
 
 function formatDateRangeDisplay(from: string, to: string) {
-  const fmt = (d: string) =>
-    new Date(`${d}T12:00:00`).toLocaleDateString(DISPLAY_LOCALE, {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  if (from && to) return `${fmt(from)} – ${fmt(to)}`;
-  if (from) return `From ${fmt(from)}`;
-  if (to) return `Until ${fmt(to)}`;
-  return "All dates";
+  return formatPeriodLabel(from, to);
 }
 
 function weekdayLabel(dateStr: string) {
@@ -263,15 +261,27 @@ export function AdminBookingsClient({
     };
   }, [openMenuId]);
 
+  const rangeBookings = useMemo(() => {
+    return rows.filter((b) => {
+      if (dateFrom && b.date < dateFrom) return false;
+      if (dateTo && b.date > dateTo) return false;
+      return true;
+    });
+  }, [rows, dateFrom, dateTo]);
+
   const stats = useMemo(
     () => ({
-      all: rows.length,
-      pending: rows.filter((b) => b.status === "pending").length,
-      confirmed: rows.filter((b) => b.status === "confirmed").length,
-      cancelled: rows.filter((b) => b.status === "cancelled").length,
+      all: rangeBookings.length,
+      pending: rangeBookings.filter((b) => b.status === "pending").length,
+      confirmed: rangeBookings.filter((b) => b.status === "confirmed").length,
+      cancelled: rangeBookings.filter((b) => b.status === "cancelled").length,
+      sale: computeConfirmedSaleInRange(rows, dateFrom, dateTo),
     }),
-    [rows]
+    [rangeBookings, rows, dateFrom, dateTo]
   );
+
+  const periodLabel = formatDateRangeDisplay(dateFrom, dateTo);
+  const monthPickerValue = monthInputFromDate(dateFrom);
 
   const growth = useMemo(() => bookingGrowthPercent(rows), [rows]);
 
@@ -291,10 +301,8 @@ export function AdminBookingsClient({
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    const list = rows.filter((b) => {
+    const list = rangeBookings.filter((b) => {
       if (statusFilter !== "all" && b.status !== statusFilter) return false;
-      if (dateFrom && b.date < dateFrom) return false;
-      if (dateTo && b.date > dateTo) return false;
       if (priceFilter !== "all") {
         const pl = (b.priceLabel ?? "").trim();
         if (priceFilter === UNPRICED) return !pl;
@@ -310,7 +318,7 @@ export function AdminBookingsClient({
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
-  }, [rows, statusFilter, dateFrom, dateTo, priceFilter, search]);
+  }, [rangeBookings, statusFilter, priceFilter, search]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
@@ -321,10 +329,26 @@ export function AdminBookingsClient({
     setPage(1);
   }, [statusFilter, dateFrom, dateTo, priceFilter, search]);
 
+  const isDefaultDateRange = dateFrom === monthFrom && dateTo === monthTo;
+  const isAllDates = !dateFrom && !dateTo;
+
   const filtersActive =
     statusFilter !== "all" ||
     priceFilter !== "all" ||
-    Boolean(search.trim());
+    Boolean(search.trim()) ||
+    (!isDefaultDateRange && !isAllDates);
+
+  function applyMonth(yearMonth: string) {
+    if (!yearMonth) {
+      setDateFrom("");
+      setDateTo("");
+      return;
+    }
+    const [year, month] = yearMonth.split("-").map(Number);
+    const range = getMonthRangeFor(year, month);
+    setDateFrom(range.from);
+    setDateTo(range.to);
+  }
 
   function clearFilters() {
     setStatusFilter("all");
@@ -382,30 +406,58 @@ export function AdminBookingsClient({
 
   const headerActions = (
     <>
-      <div className="flex items-center gap-2 rounded-xl border border-gold/25 bg-black/55 px-3 py-2 backdrop-blur-sm">
-        <IconCalendar className="h-4 w-4 shrink-0 text-gold/70" />
-        <label className="sr-only" htmlFor="bookings-date-from">
-          From date
-        </label>
-        <input
-          id="bookings-date-from"
-          type="date"
-          value={dateFrom}
-          onChange={(e) => setDateFrom(e.target.value)}
-          className="w-[7.5rem] cursor-pointer bg-transparent text-xs text-white/80 outline-none focus:text-gold-light"
-        />
-        <span className="text-gold/30">–</span>
-        <label className="sr-only" htmlFor="bookings-date-to">
-          To date
-        </label>
-        <input
-          id="bookings-date-to"
-          type="date"
-          value={dateTo}
-          min={dateFrom || undefined}
-          onChange={(e) => setDateTo(e.target.value)}
-          className="w-[7.5rem] cursor-pointer bg-transparent text-xs text-white/80 outline-none focus:text-gold-light"
-        />
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="flex items-center gap-2 rounded-xl border border-gold/25 bg-black/55 px-3 py-2 backdrop-blur-sm">
+          <IconCalendar className="h-4 w-4 shrink-0 text-gold/70" />
+          <label className="sr-only" htmlFor="bookings-month-picker">
+            Select month
+          </label>
+          <input
+            id="bookings-month-picker"
+            type="month"
+            value={monthPickerValue}
+            onChange={(e) => applyMonth(e.target.value)}
+            className="cursor-pointer bg-transparent text-xs text-white/80 outline-none focus:text-gold-light"
+          />
+        </div>
+        <div className="flex items-center gap-2 rounded-xl border border-gold/25 bg-black/55 px-3 py-2 backdrop-blur-sm">
+          <label className="sr-only" htmlFor="bookings-date-from">
+            From date
+          </label>
+          <input
+            id="bookings-date-from"
+            type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+            className="w-[7.5rem] cursor-pointer bg-transparent text-xs text-white/80 outline-none focus:text-gold-light"
+          />
+          <span className="text-gold/30">–</span>
+          <label className="sr-only" htmlFor="bookings-date-to">
+            To date
+          </label>
+          <input
+            id="bookings-date-to"
+            type="date"
+            value={dateTo}
+            min={dateFrom || undefined}
+            onChange={(e) => setDateTo(e.target.value)}
+            className="w-[7.5rem] cursor-pointer bg-transparent text-xs text-white/80 outline-none focus:text-gold-light"
+          />
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            setDateFrom("");
+            setDateTo("");
+          }}
+          className={`rounded-xl border px-3 py-2 text-[10px] uppercase tracking-[0.12em] transition ${
+            isAllDates
+              ? "border-gold/40 bg-gold/10 text-gold-light"
+              : "border-white/10 bg-black/40 text-white/55 hover:border-gold/30 hover:text-white"
+          }`}
+        >
+          All dates
+        </button>
       </div>
       {canCreate ? (
         <button
@@ -432,25 +484,41 @@ export function AdminBookingsClient({
           {actionMsg}
         </p>
       ) : null}
-      {/* Summary cards */}
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+      {/* Summary cards — scoped to selected date range */}
+      <p className="mb-3 text-[10px] uppercase tracking-[0.18em] text-white/40">
+        Showing <span className="text-gold-light/90">{periodLabel}</span>
+        {rows.length > 0 ? (
+          <>
+            {" "}
+            · <span className="text-white/50">{rows.length} total saved</span>
+          </>
+        ) : null}
+      </p>
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
         {[
           {
-            label: "Total Bookings",
+            label: "Bookings",
             value: stats.all,
-            sub:
-              growth >= 0
-                ? `+${growth}% vs last 30 days`
-                : `${growth}% vs last 30 days`,
-            subClass: growth >= 0 ? "text-gold-light/80" : "text-rose-300/80",
+            sub: periodLabel,
+            subClass: "text-white/40",
             icon: <IconCalendar className="h-4 w-4 text-gold-light" />,
             iconBg: "border border-gold/25 bg-gold/10",
             cardBorder: "border-white/10 hover:border-gold/35",
           },
           {
+            label: "Period sale",
+            value: formatPkr(stats.sale),
+            sub: "Confirmed bookings only",
+            subClass: "text-gold-light/70",
+            icon: <IconCheck className="h-4 w-4 text-gold-light" />,
+            iconBg: "border border-gold/25 bg-gold/10",
+            cardBorder: "border-gold/20 hover:border-gold/40",
+            valueClass: "text-xl sm:text-2xl",
+          },
+          {
             label: "Confirmed",
             value: stats.confirmed,
-            sub: `${pct(stats.confirmed)}% of total bookings`,
+            sub: `${pct(stats.confirmed)}% of period`,
             subClass: "text-white/40",
             icon: <IconCheck className="h-4 w-4 text-gold-light" />,
             iconBg: "border border-gold/25 bg-gold/10",
@@ -468,8 +536,11 @@ export function AdminBookingsClient({
           {
             label: "Cancelled",
             value: String(stats.cancelled).padStart(2, "0"),
-            sub: `${pct(stats.cancelled)}% of total bookings`,
-            subClass: "text-white/40",
+            sub:
+              growth >= 0
+                ? `+${growth}% vs last 30 days`
+                : `${growth}% vs last 30 days`,
+            subClass: growth >= 0 ? "text-gold-light/80" : "text-rose-300/80",
             icon: <IconX className="h-4 w-4 text-rose-200" />,
             iconBg: "border border-rose-400/25 bg-rose-500/10",
             cardBorder: "border-rose-400/15 hover:border-gold/30",
@@ -489,7 +560,9 @@ export function AdminBookingsClient({
                 {card.label}
               </p>
             </div>
-            <p className="mt-3 font-display text-2xl tabular-nums text-gold-light sm:text-3xl">
+            <p
+              className={`mt-3 font-display tabular-nums text-gold-light sm:text-3xl ${"valueClass" in card ? card.valueClass : "text-2xl"}`}
+            >
               {card.value}
             </p>
             <p className={`mt-1 text-[10px] tracking-wide ${card.subClass}`}>{card.sub}</p>
@@ -586,6 +659,40 @@ export function AdminBookingsClient({
           <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <label className="block">
               <span className="mb-1.5 block text-[10px] uppercase tracking-[0.2em] text-white/35">
+                Month
+              </span>
+              <input
+                type="month"
+                value={monthPickerValue}
+                onChange={(e) => applyMonth(e.target.value)}
+                className={adminInputClass}
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1.5 block text-[10px] uppercase tracking-[0.2em] text-white/35">
+                From date
+              </span>
+              <input
+                type="date"
+                value={dateFrom}
+                onChange={(e) => setDateFrom(e.target.value)}
+                className={adminInputClass}
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1.5 block text-[10px] uppercase tracking-[0.2em] text-white/35">
+                To date
+              </span>
+              <input
+                type="date"
+                value={dateTo}
+                min={dateFrom || undefined}
+                onChange={(e) => setDateTo(e.target.value)}
+                className={adminInputClass}
+              />
+            </label>
+            <label className="block sm:col-span-2 lg:col-span-1">
+              <span className="mb-1.5 block text-[10px] uppercase tracking-[0.2em] text-white/35">
                 Price label
               </span>
               <select
@@ -604,12 +711,19 @@ export function AdminBookingsClient({
                 ))}
               </select>
             </label>
-            <div className="sm:col-span-2">
+            <div className="sm:col-span-2 lg:col-span-2">
               <p className="mb-1.5 text-[10px] uppercase tracking-[0.2em] text-white/35">
-                Date range
+                Selected period
               </p>
               <p className={`${adminInputClass} text-white/70`}>
-                {formatDateRangeDisplay(dateFrom, dateTo)}
+                {periodLabel}
+                {stats.all > 0 ? (
+                  <span className="ml-2 text-gold-light/80">
+                    · {stats.all} booking{stats.all === 1 ? "" : "s"} · {formatPkr(stats.sale)} sale
+                  </span>
+                ) : (
+                  <span className="ml-2 text-white/40">· No bookings in this period</span>
+                )}
               </p>
             </div>
           </div>
@@ -641,7 +755,9 @@ export function AdminBookingsClient({
                     <p className="text-sm text-white/60">
                       {rows.length === 0
                         ? "Abhi koi booking nahi."
-                        : "In filters se koi match nahi."}
+                        : rangeBookings.length === 0
+                          ? "Is date range mein koi booking nahi. Doosra month ya All dates try karein."
+                          : "In filters se koi match nahi."}
                     </p>
                     {filtersActive ? (
                       <button

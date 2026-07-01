@@ -54,14 +54,14 @@ export function HomeCategoryServicesRow({
                   <img
                     src={card.image}
                     alt={card.name}
-                    className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-110"
+                    className="absolute inset-0 h-full w-full object-cover"
                   />
                 ) : (
                   <Image
                     src={card.image}
                     alt={card.name}
                     fill
-                    className="object-cover transition duration-700 group-hover:scale-110"
+                    className="object-cover"
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 45vw, 18vw"
                   />
                 )}
@@ -78,7 +78,7 @@ export function HomeCategoryServicesRow({
                 </p>
                 <Link
                   href={`/book?service=${encodeURIComponent(card.name)}`}
-                  className="btn-gold-premium mt-3 w-full py-2 text-[10px] sm:text-[11px] lg:py-3 lg:text-xs"
+                  className="home-category-card__cta btn-gold-premium mt-3 w-full py-2 text-[10px] sm:text-[11px] lg:py-3 lg:text-xs"
                 >
                   Book now
                 </Link>

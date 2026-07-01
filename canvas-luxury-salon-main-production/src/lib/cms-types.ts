@@ -102,6 +102,44 @@ export type CmsBlogPage = {
   updatedAt: string;
 };
 
+export type GalleryCategory =
+  | "before-after"
+  | "bridal"
+  | "hair"
+  | "facial"
+  | "mehndi"
+  | "reels"
+  | "instagram";
+
+export type GalleryMediaType = "image" | "before-after" | "video";
+
+export type CmsGalleryItem = {
+  id: string;
+  category: GalleryCategory;
+  mediaType: GalleryMediaType;
+  title: string;
+  caption?: string;
+  imageUrl?: string;
+  beforeImageUrl?: string;
+  afterImageUrl?: string;
+  /** Instagram, TikTok, or direct video (.mp4) URL */
+  videoUrl?: string;
+  sortOrder: number;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type CmsGalleryPage = {
+  kicker: string;
+  title: string;
+  subtitle: string;
+  instagramUrl: string;
+  tiktokUrl: string;
+  emptyMessage: string;
+  updatedAt: string;
+};
+
 export type CmsCourseApplication = {
   id: string;
   courseId: string;
@@ -215,16 +253,22 @@ export type CmsHomeHeroTrust = {
 
 export type CmsHomeHero = {
   imageUrl: string;
+  /** Smaller floating image on the right collage */
+  secondaryImageUrl: string;
   badgeText: string;
   kicker: string;
   titleLine1: string;
   titleLine2: string;
+  /** Cursive gold tagline under the main heading */
+  scriptLine: string;
   description: string;
   footnote: string;
   primaryBtnLabel: string;
   primaryBtnHref: string;
   secondaryBtnLabel: string;
   secondaryBtnHref: string;
+  portfolioBtnLabel: string;
+  portfolioBtnHref: string;
   trustItems: CmsHomeHeroTrust[];
 };
 
@@ -390,6 +434,8 @@ export const ADMIN_PERMISSIONS = {
   "about.manage": ["owner"] as AdminRole[],
   "blog.view": ["owner", "reception"] as AdminRole[],
   "blog.manage": ["owner"] as AdminRole[],
+  "gallery.view": ["owner", "reception"] as AdminRole[],
+  "gallery.manage": ["owner"] as AdminRole[],
   "users.manage": ["owner"] as AdminRole[],
 } as const;
 

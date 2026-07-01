@@ -357,6 +357,19 @@ export function AdminHomeClient({
     }
   }
 
+  async function onHeroSecondaryImage(file: File | null) {
+    if (!file) return;
+    setBusy(true);
+    try {
+      const url = await uploadAdminImage(file);
+      setPage((p) => ({ ...p, hero: { ...p.hero, secondaryImageUrl: url } }));
+    } catch (e) {
+      setMsg(e instanceof Error ? e.message : "Upload failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function save() {
     if (!canManage) return;
     setBusy(true);
@@ -370,7 +383,7 @@ export function AdminHomeClient({
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Save failed");
       setPage(normalizeHomePage(data));
-      setMsg("Home page saved. Refresh the public site to see changes.");
+      setMsg("Home page saved — open / or refresh the homepage to see your changes.");
     } catch (e) {
       setMsg(e instanceof Error ? e.message : "Save failed");
     } finally {
@@ -449,6 +462,30 @@ export function AdminHomeClient({
                 />
               </AdminField>
             ) : null}
+            <AdminField label="Secondary image URL (floating collage)">
+              <input
+                className={adminInputClass}
+                value={page.hero.secondaryImageUrl ?? ""}
+                disabled={!canManage}
+                onChange={(e) =>
+                  setPage((p) => ({
+                    ...p,
+                    hero: { ...p.hero, secondaryImageUrl: e.target.value },
+                  }))
+                }
+              />
+            </AdminField>
+            {canManage ? (
+              <AdminField label="Upload secondary image">
+                <input
+                  type="file"
+                  accept="image/*"
+                  disabled={busy}
+                  onChange={(e) => onHeroSecondaryImage(e.target.files?.[0] ?? null)}
+                  className="text-sm text-white/70"
+                />
+              </AdminField>
+            ) : null}
             <div className="grid gap-4 sm:grid-cols-2">
               <AdminField label="Badge text">
                 <input
@@ -491,6 +528,16 @@ export function AdminHomeClient({
                 />
               </AdminField>
             </div>
+            <AdminField label="Script line (gold cursive under title)">
+              <input
+                className={adminInputClass}
+                disabled={!canManage}
+                value={page.hero.scriptLine ?? ""}
+                onChange={(e) =>
+                  setPage((p) => ({ ...p, hero: { ...p.hero, scriptLine: e.target.value } }))
+                }
+              />
+            </AdminField>
             <AdminField label="Description">
               <textarea
                 className={`${adminInputClass} min-h-[96px]`}
@@ -551,7 +598,7 @@ export function AdminHomeClient({
                   }
                 />
               </AdminField>
-              <AdminField label="Secondary link">
+              <AdminField label="Secondary link (WhatsApp uses wa.me if blank)">
                 <input
                   className={adminInputClass}
                   disabled={!canManage}
@@ -564,10 +611,44 @@ export function AdminHomeClient({
                   }
                 />
               </AdminField>
+              <AdminField label="Portfolio button label">
+                <input
+                  className={adminInputClass}
+                  disabled={!canManage}
+                  value={page.hero.portfolioBtnLabel ?? ""}
+                  onChange={(e) =>
+                    setPage((p) => ({
+                      ...p,
+                      hero: { ...p.hero, portfolioBtnLabel: e.target.value },
+                    }))
+                  }
+                />
+              </AdminField>
+              <AdminField label="Portfolio button link">
+                <input
+                  className={adminInputClass}
+                  disabled={!canManage}
+                  value={page.hero.portfolioBtnHref ?? ""}
+                  onChange={(e) =>
+                    setPage((p) => ({
+                      ...p,
+                      hero: { ...p.hero, portfolioBtnHref: e.target.value },
+                    }))
+                  }
+                />
+              </AdminField>
             </div>
+            <p className="text-xs text-white/50">
+              Trust stats: row 1 = Google floating card. Rows 2+ appear in the bottom
+              stats bar on the homepage.
+            </p>
             <h3 className="pt-2 font-display text-lg">Trust stats</h3>
             {page.hero.trustItems.map((item, idx) => (
               <div key={idx} className="grid gap-3 rounded-xl border border-white/10 p-4 sm:grid-cols-3">
+                <p className="text-[10px] uppercase tracking-wider text-gold/70 sm:col-span-3">
+                  Stat {idx + 1}
+                  {idx === 0 ? " · Google floating card" : " · Bottom bar"}
+                </p>
                 <AdminField label="Value">
                   <input
                     className={adminInputClass}
@@ -606,6 +687,27 @@ export function AdminHomeClient({
                 </AdminField>
               </div>
             ))}
+            {canManage ? (
+              <button
+                type="button"
+                disabled={busy}
+                className="rounded-full border border-gold/40 px-4 py-2 text-xs uppercase tracking-wider text-gold"
+                onClick={() =>
+                  setPage((p) => ({
+                    ...p,
+                    hero: {
+                      ...p.hero,
+                      trustItems: [
+                        ...p.hero.trustItems,
+                        { value: "", label: "", hint: "" },
+                      ],
+                    },
+                  }))
+                }
+              >
+                + Add stat row
+              </button>
+            ) : null}
           </div>
         ) : null}
 

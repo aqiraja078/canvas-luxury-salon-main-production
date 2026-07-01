@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { HumaLogo } from "@/components/brand/HumaLogo";
 import type { SiteNavLink } from "@/lib/navigation";
-import { site } from "@/lib/site";
+import { site, whatsappUrl } from "@/lib/site";
 
 const footerLinkClass =
   "inline-block py-1 transition hover:text-white sm:py-1.5";
@@ -73,6 +73,16 @@ export function SiteFooter({
             <li>
               <a href={`tel:+${site.phoneDigits}`} className="hover:text-white">
                 {site.phone}
+              </a>
+            </li>
+            <li>
+              <a
+                href={whatsappUrl()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-white"
+              >
+                WhatsApp
               </a>
             </li>
             <li>

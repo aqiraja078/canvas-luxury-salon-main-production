@@ -61,7 +61,7 @@ export function SiteHeader({
           <HumaLogo variant="brand" size="md" />
         </Link>
 
-        <nav className="hidden items-center gap-8 lg:flex">
+        <nav className="hidden items-center gap-8 lg:flex" aria-label="Main navigation">
           <Link
             href="/"
             className={`relative text-xs uppercase tracking-[0.2em] transition-colors ${
@@ -125,6 +125,7 @@ export function SiteHeader({
                       <Link
                         key={s.href}
                         href={s.href}
+                        role="menuitem"
                         className={`block px-4 py-2.5 text-xs uppercase tracking-[0.15em] transition hover:bg-white/5 ${
                           pathname === s.href
                             ? "text-gold"
@@ -198,6 +199,7 @@ export function SiteHeader({
           >
             <motion.nav
               id="mobile-nav"
+              aria-label="Mobile navigation"
               className="flex flex-col gap-0.5 px-4 py-5 sm:px-6"
               initial="hidden"
               animate="show"

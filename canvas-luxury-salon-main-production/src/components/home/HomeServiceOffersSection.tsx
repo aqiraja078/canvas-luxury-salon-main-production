@@ -8,7 +8,6 @@ import {
   type HomeOfferSlideItem,
 } from "@/components/home/HomeServiceOffersSlider";
 import type { CmsHomeSectionMeta, CmsOffer } from "@/lib/cms-types";
-import { getActiveOffers } from "@/lib/offers-store";
 
 function offerToSlideItem(offer: CmsOffer): HomeOfferSlideItem {
   const iconName = offer.includedServices[0] || offer.title;
@@ -30,14 +29,24 @@ function offerToSlideItem(offer: CmsOffer): HomeOfferSlideItem {
   };
 }
 
-export async function HomeServiceOffersSection({ meta }: { meta: CmsHomeSectionMeta }) {
-  const offers = await getActiveOffers();
+type Props = {
+  meta: CmsHomeSectionMeta;
+  offers: CmsOffer[];
+};
+
+/** Sync section — offers data must be fetched in the parent page to preserve DOM order below hero. */
+export function HomeServiceOffersSection({ meta, offers }: Props) {
   const items = offers.map(offerToSlideItem);
 
   if (items.length === 0) return null;
 
   return (
-    <HomeSection tone="obsidian" bleed className="!pb-10 sm:!pb-12">
+    <HomeSection
+      id="home-offers"
+      tone="obsidian"
+      bleed
+      className="!pb-10 sm:!pb-12"
+    >
       <div className="home-section__inner">
         <HomeSectionHeader
           kicker={meta.kicker}

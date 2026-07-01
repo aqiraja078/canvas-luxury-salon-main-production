@@ -92,43 +92,77 @@ type Props = {
   items: HomeOfferSlideItem[];
 };
 
-/** Auto-scrolling row of CMS offers (synced with /offers page). */
+/** Auto-scrolling row of CMS offers — each offer shown once. */
 export function HomeServiceOffersSlider({ items }: Props) {
   const trackRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
   const [paused, setPaused] = useState(false);
+  const [fitsViewport, setFitsViewport] = useState(false);
   const reducedMotion = usePrefersReducedMotion();
-  const slideItems = reducedMotion ? items : [...items, ...items];
 
   useEffect(() => {
-    if (items.length === 0 || paused || reducedMotion) return;
+    const track = trackRef.current;
+    const viewport = viewportRef.current;
+    if (!track || !viewport) return;
+
+    const measure = () => {
+      setFitsViewport(track.scrollWidth <= viewport.clientWidth + 2);
+    };
+
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(track);
+    observer.observe(viewport);
+    window.addEventListener("resize", measure);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [items]);
+
+  useEffect(() => {
+    if (items.length === 0 || paused || reducedMotion || fitsViewport) return;
 
     const track = trackRef.current;
-    if (!track) return;
+    const viewport = viewportRef.current;
+    if (!track || !viewport) return;
+
+    const maxScroll = track.scrollWidth - viewport.clientWidth;
+    if (maxScroll <= 0) return;
 
     let frame: number;
     let offset = 0;
-    const speed = 0.5;
+    let direction = 1;
+    const speed = 0.45;
 
     const step = () => {
-      const half = track.scrollWidth / 2;
-      offset += speed;
-      if (offset >= half) offset = 0;
+      offset += speed * direction;
+      if (offset >= maxScroll) {
+        offset = maxScroll;
+        direction = -1;
+      } else if (offset <= 0) {
+        offset = 0;
+        direction = 1;
+      }
       track.style.transform = `translate3d(-${offset}px, 0, 0)`;
       frame = requestAnimationFrame(step);
     };
 
     frame = requestAnimationFrame(step);
     return () => cancelAnimationFrame(frame);
-  }, [items.length, paused, reducedMotion]);
+  }, [items.length, paused, reducedMotion, fitsViewport]);
 
   if (items.length === 0) return null;
 
-  if (reducedMotion) {
+  const useStaticLayout = reducedMotion || fitsViewport;
+
+  if (useStaticLayout) {
     return (
       <div className="home-offer-slider home-offer-slider--static px-4 sm:px-6">
-        <div className="mx-auto flex max-w-7xl snap-x snap-mandatory gap-4 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="mx-auto flex max-w-7xl flex-wrap justify-center gap-4 pb-2 sm:gap-5">
           {items.map((item) => (
-            <div key={item.id} className="snap-start">
+            <div key={item.id} className="shrink-0">
               <OfferSlideCard item={item} />
             </div>
           ))}
@@ -147,10 +181,10 @@ export function HomeServiceOffersSlider({ items }: Props) {
     >
       <div className="home-offer-slider__fade home-offer-slider__fade--left" aria-hidden />
       <div className="home-offer-slider__fade home-offer-slider__fade--right" aria-hidden />
-      <div className="home-offer-slider__viewport">
+      <div ref={viewportRef} className="home-offer-slider__viewport">
         <div ref={trackRef} className="home-offer-slider__track">
-          {slideItems.map((item, idx) => (
-            <OfferSlideCard key={`${item.id}-${idx}`} item={item} />
+          {items.map((item) => (
+            <OfferSlideCard key={item.id} item={item} />
           ))}
         </div>
       </div>

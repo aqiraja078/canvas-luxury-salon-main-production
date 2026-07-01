@@ -20,6 +20,17 @@ export function JsonLd() {
       addressCountry: "PK",
     },
     priceRange: "$$",
+    areaServed: site.serviceAreas.map((area) => ({
+      "@type": "City",
+      name: area,
+    })),
+    sameAs: [site.social.instagram, site.social.tiktok],
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: "4.9",
+      bestRating: "5",
+      ratingCount: "500",
+    },
   };
 
   return (

@@ -1,12 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { site } from "@/lib/site";
+import { site, whatsappUrl } from "@/lib/site";
 
 export function WhatsAppButton() {
-  const href = `https://wa.me/${site.phoneDigits}?text=${encodeURIComponent(
-    `Hello ${site.name}, I would like to book an appointment.`
-  )}`;
+  const href = whatsappUrl();
 
   return (
     <motion.a

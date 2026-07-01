@@ -6,7 +6,9 @@ import {
   getActiveBlogPosts,
   getBlogPostBySlug,
 } from "@/lib/blog-store";
-import { formatBlogDate, splitBlogParagraphs } from "@/lib/blog-utils";
+import { BlogContent, BlogCoverImage } from "@/components/blog/BlogContent";
+import { formatBlogDate, formatBlogMonthYear } from "@/lib/blog-utils";
+import { buildPageMetadata } from "@/lib/seo-metadata";
 import { site } from "@/lib/site";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -17,10 +19,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = await getBlogPostBySlug(slug);
   if (!post) return { title: "Article not found" };
-  return {
+  return buildPageMetadata({
     title: post.title,
     description: post.excerpt,
-  };
+    path: `/blog/${post.slug}`,
+    image: post.coverImage,
+    type: "article",
+  });
 }
 
 export default async function BlogArticlePage({ params }: Props) {
@@ -28,7 +33,6 @@ export default async function BlogArticlePage({ params }: Props) {
   const post = await getBlogPostBySlug(slug);
   if (!post) notFound();
 
-  const paragraphs = splitBlogParagraphs(post.content);
   const related = (await getActiveBlogPosts())
     .filter((p) => p.id !== post.id)
     .slice(0, 3);
@@ -44,47 +48,32 @@ export default async function BlogArticlePage({ params }: Props) {
             >
               ← All articles
             </Link>
-            <div className="mt-6 flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.18em] text-white/50">
-              <span className="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-gold-light">
-                {post.category}
-              </span>
-              <time dateTime={post.publishedAt}>{formatBlogDate(post.publishedAt)}</time>
-              <span aria-hidden>·</span>
-              <span>{post.readTimeMinutes} min read</span>
-              <span aria-hidden>·</span>
-              <span>{post.author}</span>
+            <h1 className="blog-article__title mt-6">{post.title}</h1>
+            <div className="blog-article__meta mt-5">
+              <p>
+                <span className="blog-article__meta-label">Category:</span> {post.category}
+              </p>
+              <p>
+                <span className="blog-article__meta-label">Reading Time:</span>{" "}
+                {post.readTimeMinutes} Minutes
+              </p>
+              <p>
+                <span className="blog-article__meta-label">Published:</span>{" "}
+                <time dateTime={post.publishedAt}>{formatBlogMonthYear(post.publishedAt)}</time>
+              </p>
             </div>
-            <h1 className="blog-article__title mt-5">{post.title}</h1>
-            <p className="mt-5 text-lg leading-relaxed text-white/70">{post.excerpt}</p>
+            <hr className="blog-article__divider mt-8" />
           </Reveal>
         </div>
       </header>
 
-      {post.coverImage ? (
-        <section className="px-4 pb-12 sm:px-6 md:px-8">
-          <div className="mx-auto max-w-5xl">
-            <Reveal scale>
-              <div className="blog-article__cover overflow-hidden rounded-3xl border border-white/10">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={post.coverImage}
-                  alt=""
-                  className="aspect-[21/9] w-full object-cover"
-                />
-              </div>
-            </Reveal>
-          </div>
-        </section>
-      ) : null}
-
-      <section className="border-t border-white/10 px-4 py-14 sm:px-6 md:px-8 md:py-20">
-        <div className="mx-auto grid max-w-5xl gap-12 lg:grid-cols-[1fr_280px]">
+      <section className="px-4 py-10 sm:px-6 md:px-8 md:py-14">
+        <div className="mx-auto grid max-w-4xl gap-12 lg:max-w-5xl lg:grid-cols-[1fr_280px]">
           <Reveal>
-            <div className="blog-article__content">
-              {paragraphs.map((para, idx) => (
-                <p key={idx}>{para}</p>
-              ))}
-            </div>
+            {post.coverImage ? (
+              <BlogCoverImage src={post.coverImage} />
+            ) : null}
+            <BlogContent content={post.content} />
             {post.tags.length > 0 ? (
               <ul className="mt-10 flex flex-wrap gap-2">
                 {post.tags.map((tag) => (

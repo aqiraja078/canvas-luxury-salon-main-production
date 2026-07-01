@@ -13,7 +13,7 @@ export function OfferCard({ offer }: OfferCardProps) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={offer.imageUrl}
-            alt=""
+            alt={offer.title}
             className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />

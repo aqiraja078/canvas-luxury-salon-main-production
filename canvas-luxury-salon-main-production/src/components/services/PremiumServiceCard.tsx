@@ -29,7 +29,7 @@ export function PremiumServiceCard({ item, theme }: Props) {
 
   return (
     <article
-      className={`premium-service-card ${accent} ${item.featured ? "premium-service-card--featured" : ""}`}
+      className={`premium-service-card group ${accent} ${item.featured ? "premium-service-card--featured" : ""}`}
     >
       <span className="premium-service-card__flare premium-service-card__flare--tl" aria-hidden />
       <span className="premium-service-card__flare premium-service-card__flare--tr" aria-hidden />

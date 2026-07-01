@@ -12,7 +12,8 @@ export async function POST(request: Request) {
       hasPermission(session.role, "about.manage") ||
       hasPermission(session.role, "offers.manage") ||
       hasPermission(session.role, "team.manage") ||
-      hasPermission(session.role, "courses.manage");
+      hasPermission(session.role, "courses.manage") ||
+      hasPermission(session.role, "gallery.manage");
     if (!canUpload) throw new Error("Forbidden");
 
     const form = await request.formData();

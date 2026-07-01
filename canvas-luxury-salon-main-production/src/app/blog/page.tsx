@@ -1,15 +1,16 @@
-import type { Metadata } from "next";
 import { Reveal } from "@/components/ui/Reveal";
 import { BlogCard } from "@/components/blog/BlogCard";
 import { getActiveBlogPosts, getBlogPage } from "@/lib/blog-store";
+import { buildPageMetadata } from "@/lib/seo-metadata";
 import { site } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
   title: "Beauty Blog",
   description: `Beauty tips, bridal guides, and expert advice from ${site.name}.`,
-};
+  path: "/blog",
+});
 
 export default async function BlogPage() {
   const [posts, page] = await Promise.all([getActiveBlogPosts(), getBlogPage()]);
@@ -40,8 +41,8 @@ export default async function BlogPage() {
             <>
               {featured ? (
                 <Reveal scale>
-                  <div className="mb-12 md:mb-16">
-                    <p className="mb-4 text-xs uppercase tracking-[0.28em] text-gold">
+                  <div className="mb-8 md:mb-10">
+                    <p className="mb-3 text-xs uppercase tracking-[0.28em] text-gold">
                       Featured story
                     </p>
                     <BlogCard post={featured} variant="featured" />
